@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📸 SNAP! BOOTH - Web Photobooth App
 
-## Getting Started
+Aplikasi Web Photobooth modern dengan antarmuka **Neobrutalism**, dibangun untuk memberikan pengalaman photobooth profesional langsung dari browser. Pengguna dapat mengambil foto, menerapkan filter, melakukan pembayaran untuk *frame* premium, dan menerima hasil cetak/digital.
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Frontend:** Next.js 14.2.35 (App Router), React, Tailwind CSS, Lucide React
+- **Backend/BaaS:** Supabase (PostgreSQL, Auth, Storage)
+- **Payment Gateway:** Midtrans (Snap API)
+- **Email Service:** Resend API
+- **Kamera:** React Webcam & HTML5 Canvas API
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Fitur yang Sudah Selesai (Fase 1)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [x] Inisialisasi proyek Next.js & konfigurasi Tailwind CSS (Neobrutalism UI).
+- [x] Landing Page interaktif dan responsif.
+- [x] Konfigurasi Supabase Client (`@supabase/ssr`).
+- [x] Skema Database (Tabel `profiles`, `frames`) beserta fungsi Trigger otomatis untuk user baru (Bonus 10 Koin).
+- [x] Autentikasi Wajib via **Google OAuth**.
+- [x] API Routes dasar untuk Midtrans (Top-up) dan Resend (Email pengiriman hasil foto).
+- [x] *Drafting* komponen Studio Kamera dengan fitur integrasi *Webcam* dan *Canvas Merging* (Filter Retro/Sepia).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Cara Menjalankan di Lokal (Development)
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone repository ini:
+   ```bash
+   git clone [https://github.com/yoga220802/PRD_Project_Photobooth.git](https://github.com/yoga220802/PRD_Project_Photobooth.git)
