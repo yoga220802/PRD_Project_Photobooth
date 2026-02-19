@@ -1,0 +1,60 @@
+PRD: PHOTOBOOTH INTEGRATION WEB
+Versi: 1.0
+Status: Draft Proyek Pengembangan
+=========================================
+1. Pendahuluan & Objektif
+Menciptakan pengalaman photobooth profesional yang dapat diakses melalui browser (Web-App), memungkinkan pengguna untuk mengambil foto dengan frame eksklusif, melakukan pembayaran digital, dan menerima hasil cetak atau digital secara instan.
+? Target Audiens:
+? Pengguna Individu: Mahasiswa, pasangan, atau grup pertemanan.
+? B2B: Event Organizer (EO) untuk pernikahan, wisuda, atau seminar.
+=========================================
+2. Arsitektur Sistem & Tools
+=========================================
+Komponen Teknologi Dan Fungsi
+---------
+Frontend :
+Next.js 14, Tailwind CSS
+Antarmuka pengguna (UI) dan logika kamera.
+=========================================
+Backend/DB :
+Supabase
+Auth, Database koin/user, dan Cloud Storage.
+=========================================
+Payment :
+Midtrans Snap API
+Gerbang pembayaran QRIS/Gopay.
+=========================================
+Email :
+Resend API
+Pengiriman hasil foto ke email pengguna.
+=========================================
+Hardware :
+Node.js Print Agent
+Jembatan cetak otomatis via USB/Wi-Fi.
+=========================================
+3. Fitur Utama (Functional Requirements)
+=========================================
+3.1. Autentikasi Wajib
+Pengguna wajib login menggunakan akun Google melalui Supabase Auth sebelum mengakses dashboard.
+=========================================
+3.2. Ekonomi & Monetisasi
+Sistem koin (Top-up via Midtrans) dan sistem gembok frame premium berdasarkan saldo koin.
+=========================================
+3.3. Studio Kamera & Pemrosesan
+Live preview, filter warna (BW, Sepia, Vivid), dan logika penggabungan foto (Canvas Merging).
+=========================================
+3.4. Pengiriman & Aksi
+QR Code, Download digital, Send to Email (Resend), dan Auto-Print signal.
+=========================================
+4. Alur Pengguna (User Journey)
+=========================================
+1. Entry: User buka web -> Login Google.
+2. Dashboard: Lihat saldo koin -> Pilih Frame.
+3. Payment: Top-Up jika diperlukan.
+4. Studio: Pilih Filter -> Capture & Processing.
+5. Output: Upload ke Cloud -> Result Page.
+6. Final Action: Scan QR / Download / Kirim Email / Ambil hasil cetak.
+=========================================
+5. Persyaratan Non-Fungsional
+=========================================
+? Responsivitas (HP, Tab, Laptop), Keamanan (Supabase RLS), dan Stabilitas Print Agent.
