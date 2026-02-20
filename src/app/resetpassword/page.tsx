@@ -1,27 +1,38 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Camera, Aperture, Film, Image, ArrowLeft } from 'lucide-react'
-import LoginNotification from '@/components/notifikasi/loginnotifikasi'
+import EmailNotification from '@/components/notifikasi/emailnotifikasi'
+import ErrorNotification from '@/components/notifikasi/errornotifikasi'
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
     const [showModal, setShowModal] = useState(false)
-    const router = useRouter()
+    const [showErrorModal, setShowErrorModal] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
-    const handleLogin = (e: React.FormEvent) => {
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        return emailRegex.test(email)
+    }
+
+    const handleResetPassword = (e: React.FormEvent) => {
         e.preventDefault()
-        setShowModal(true)
+        if (email) {
+            if (!validateEmail(email)) {
+                setErrorMessage('Format email tidak valid! Pastikan email mengandung @ dan domain yang benar (contoh: user@gmail.com)')
+                setShowErrorModal(true)
+                return
+            }
+            setShowModal(true)
+        }
     }
 
     const handleOk = () => {
+        localStorage.setItem('resetEmail', email)
         setShowModal(false)
-        router.push('/dashboard')
-    }
-
-    const handleGoogleLogin = () => {
+        setEmail('')
+        window.location.href = '/resetpassword/verify'
     }
 
     return (
@@ -29,7 +40,7 @@ export default function LoginPage() {
             
             {/* Button Back */}
             <a 
-                href="/"
+                href="/login"
                 className="absolute top-4 left-4 z-50 bg-white hover:bg-gray-100 border-3 border-black p-2 rounded-full shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] transition-all"
             >
                 <ArrowLeft size={20} className="text-black" />
@@ -91,7 +102,7 @@ export default function LoginPage() {
                 <div className="mt-1 h-1 bg-black"></div>
             </div>
             
-            <div className="bg-gray-100 border-4 md:border-[6px] border-black p-6 md:p-8 w-full max-w-lg relative z-10 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+            <div className="bg-gray-100 border-4 md:border-[6px] border-black p-6 md:p-8 w-full max-w-lg shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative z-10">
                 
                 <div className="flex justify-center mb-4">
                     <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full border-4 border-black flex items-center justify-center shadow-lg">
@@ -101,68 +112,39 @@ export default function LoginPage() {
                 </div>
 
                 <h1 className="text-3xl md:text-4xl font-black text-center mb-2 text-black">
-                    PHOTOBOOTH
+                    Reset Password
                 </h1>
-                <p className="text-center text-xs md:text-sm font-bold text-gray-600 mb-6">Abadikan Momen Indahmu</p>
+                <p className="text-center text-xs md:text-sm font-bold text-gray-600 mb-6">Masukkan email untuk reset password</p>
 
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleResetPassword} className="space-y-4">
                     
                     <div>
                         <label className="block text-sm font-bold text-black mb-2">Email</label>
                         <input
-                            type="email"
+                            type="text"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-3 bg-white border-4 border-black text-black focus:outline-none focus:ring-0"
                             placeholder="email@example.com"
+                            required
                         />
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-bold text-black mb-2">Password</label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            className="w-full px-4 py-3 bg-white border-4 border-black text-black focus:outline-none focus:ring-0"
-                            placeholder="••••••••"
-                        />
-                        <div className="text-right mt-2">
-                            <a href="/resetpassword" className="text-sm text-gray-500 hover:text-gray-700">Lupa password?</a>
-                        </div>
                     </div>
 
                     <button
                         type="submit"
                         className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-black text-lg md:text-xl py-3 md:py-4 border-4 border-black shadow-[0_4px_0_0_rgba(0,0,0,1)] md:shadow-[0_6px_0_0_rgba(0,0,0,1)] active:shadow-[0_2px_0_0_rgba(0,0,0,1)] active:translate-y-1 transition-all"
                     >
-                        MASUK
+                        KIRIM KODE
                     </button>
                 </form>
 
-                <div className="my-4 text-center text-xs md:text-sm text-black font-medium">
-                    Atau login dengan
-                </div>
-
-                <div className="flex justify-center">
-                    <button
-                        onClick={handleGoogleLogin}
-                        className="hover:opacity-80 transition-opacity"
-                    >
-                        <img
-                            src="https://www.svgrepo.com/show/475656/google-color.svg"
-                            alt="Google"
-                            className="w-8 h-8 md:w-10 md:h-10"
-                        />
-                    </button>
-                </div>
-
-                <p className="text-center mt-4 text-xs md:text-sm text-black">
-                    Belum punya akun? <a href="#" className="font-bold underline hover:text-gray-700">daftar disini</a>
+                <p className="text-center mt-4 text-sm text-black">
+                    Sudah ingat password? <a href="/login" className="font-bold underline hover:text-gray-700">login disini</a>
                 </p>
             </div>
 
-            {showModal && <LoginNotification onClose={handleOk} />}
+            {showModal && <EmailNotification email={email} onClose={handleOk} />}
+            {showErrorModal && <ErrorNotification message={errorMessage} onClose={() => setShowErrorModal(false)} />}
         </div>
     )
 }
