@@ -56,3 +56,33 @@ Penambahan alur sistem di form *ubah password*:
 Halaman gawat darurat berskala *global root* untuk menangani URL/direktori hilang (*404 Not Found*). Dilengkapi tata letak, ornamen jejak kaki, dan bingkai gambar bertema *Neobrutalism* khas Photobooth.
 - **Lokasi File:** `src/app/not-found.tsx`
 - **Otomatis Aktif:** Hal ini tidak perlu diimpor, karena sistem Next.js App Router akan mengalihkan *user* ke sini tiap kali mereka mengakses tautan yang tak tersedia.
+
+### 4. Global Error Boundary (`error.tsx`)
+Halaman error bawaan (App Router) berskala global dengan desain Neobrutalism. Tampil secara otomatis jika ada aplikasi yang crash. Dilengkapi tombol untuk *reset* dan mencobanya kembali.
+- **Lokasi File:** `src/app/error.tsx`
+
+### 5. Global Loading Skeleton (`loading.tsx`)
+Layar kerangka pemuatan global (*Loading Skeleton*) yang mencegah layar aplikasi terasa kosong melompong putih ketika sistem tengah berpindah memuat rute dan modul berat. Dilengkapi dengan animasi *spinner spinning* desain pinggiran tabel Neobrutalism.
+- **Lokasi File:** `src/app/loading.tsx`
+
+### 6. Toast & Alert Component System (`Toast.tsx`)
+Komponen pop-up Alert dinamis untuk status *Success / Info / Error / Warning* dengan balutan Neobrutalism. Provider ini membungkus struktur paling dasar (`layout.tsx`), sehingga bebas dipanggil di komponen anak manapun via *custom hooks*.
+- **Lokasi Provider:** `src/components/Toast.tsx`
+- **Cara Penggunaan Komponen:**
+  ```tsx
+  import { useToast } from '@/components/Toast';
+
+  export default function AnakKomponen() {
+      const { showToast } = useToast();
+
+      const panggilToast = () => {
+          showToast('Waduh, koneksimu terputus!', 'error'); // Tipe: error, success, info, warning
+      }
+      return <button onClick={panggilToast}>Klik disini</button>;
+  }
+  ```
+
+### 7. Halaman Pusat Preview (Tester)
+Sebuah halaman rute simulatif yang dibuat secara khusus untuk membantu Developer lain atau tim tester PM/QA mengetes dan melihat (*preview*) secara langsung bentuk komponen Error, Loading, dan Toast di dalam satu sentral kontrol Neobrutalism UI sebelum dipakai ke proyek utama.
+- **Lokasi File Utama:** `src/app/test-loading/page.tsx`
+- **Cara Akses Tes:** Cukup buka `http://localhost:3000/test-loading` saat *development server* berjalan.
