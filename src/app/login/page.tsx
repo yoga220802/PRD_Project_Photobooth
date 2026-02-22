@@ -158,7 +158,7 @@ export default function LoginPage() {
                 </div>
 
                 <p className="text-center mt-4 text-xs md:text-sm text-black">
-                    Belum punya akun? <a href="#" className="font-bold underline hover:text-gray-700">daftar disini</a>
+                    Belum punya akun? <a href="/register" className="font-bold underline hover:text-gray-700">daftar disini</a>
                 </p>
             </div>
 

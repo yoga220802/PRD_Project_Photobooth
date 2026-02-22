@@ -31,7 +31,7 @@ export default function Home() {
 
         {/* Tombol CTA */}
         <Link
-          href="/login"
+          href="/register"
           className="btn-neo bg-green-400 text-2xl px-12 py-4 mt-8 flex items-center gap-3 group"
         >
           MULAI FOTO SEKARANG

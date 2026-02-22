@@ -1,26 +1,28 @@
-# 📸 SNAP! BOOTH - Web Photobooth App
+# Photobooth Web App
 
-Aplikasi Web Photobooth modern dengan antarmuka **Neobrutalism**, dibangun untuk memberikan pengalaman photobooth profesional langsung dari browser. Pengguna dapat mengambil foto, menerapkan filter, melakukan pembayaran untuk *frame* premium, dan menerima hasil cetak/digital.
+Aplikasi photobooth berbasis web yang memungkinkan pengguna mengambil foto dengan frame eksklusif, melakukan pembayaran digital, dan menerima hasil foto secara instan.
 
 ## Tech Stack
 
-- **Frontend:** Next.js 14.2.35 (App Router), React, Tailwind CSS, Lucide React
-- **Backend/BaaS:** Supabase (PostgreSQL, Auth, Storage)
-- **Payment Gateway:** Midtrans (Snap API)
-- **Email Service:** Resend API
-- **Kamera:** React Webcam & HTML5 Canvas API
+- **Frontend**: Next.js 14, React 18, Tailwind CSS
+- **Backend/Database**: Supabase (Auth, Database, Storage)
+- **Payment**: Midtrans
+- **Email**: Resend API
+- **Camera**: react-webcam
+- **UI Icons**: lucide-react
 
-## Fitur yang Sudah Selesai (Fase 1)
+## Fitur yang Sudah Dibuat
 
-- [x] Inisialisasi proyek Next.js & konfigurasi Tailwind CSS (Neobrutalism UI).
-- [x] Landing Page interaktif dan responsif.
-- [x] Konfigurasi Supabase Client (`@supabase/ssr`).
-- [x] Skema Database (Tabel `profiles`, `frames`) beserta fungsi Trigger otomatis untuk user baru (Bonus 10 Koin).
-- [x] Autentikasi Wajib via **Google OAuth**.
-- [x] API Routes dasar untuk Midtrans (Top-up) dan Resend (Email pengiriman hasil foto).
-- [x] *Drafting* komponen Studio Kamera dengan fitur integrasi *Webcam* dan *Canvas Merging* (Filter Retro/Sepia).
+### Autentikasi
+- Login dengan email/password
+- Register akun baru
+- Reset password (dengan verifikasi email)
+- OAuth callback handler
+- Protected dashboard route
 
-## Cara Menjalankan di Lokal (Development)
+### Dashboard
+- Halaman dashboard untuk user yang sudah login
+- Akses ke camera studio
 
 1. Clone repository ini:
    ```bash
