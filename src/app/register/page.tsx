@@ -180,6 +180,15 @@ export default function RegisterPage() {
               </svg>
             </button>
           </div>
+
+          <div className="flex justify-center mt-4">
+            <p className="text-sm text-black font-medium">
+              Sudah punya akun?{' '}
+              <a href="/login" className="text-black font-bold hover:underline">
+                Login di sini
+              </a>
+            </p>
+          </div>
         </form>
 
       </div>
