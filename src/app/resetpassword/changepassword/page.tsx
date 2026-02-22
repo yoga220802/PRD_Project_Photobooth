@@ -2,37 +2,46 @@
 
 import { useState } from 'react'
 import { Camera, Eye, EyeOff, ArrowLeft } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import UbahPasswordNotification from '@/components/notifikasi/ubahpasswordnotifikasi'
 
 export default function ChangePasswordPage() {
     const [newPassword, setNewPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
     const [showNewPassword, setShowNewPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+    const [showNotification, setShowNotification] = useState(false)
+    const router = useRouter()
 
     const handleChangePassword = (e: React.FormEvent) => {
         e.preventDefault()
-        
+
         if (newPassword && confirmPassword) {
             if (newPassword !== confirmPassword) {
                 alert('Password tidak cocok!')
                 return
             }
-            
+
             if (newPassword.length < 6) {
                 alert('Password minimal 6 karakter!')
                 return
             }
-            
+
             console.log('Password berhasil diubah')
-            // Redirect ke login atau dashboard
+            setShowNotification(true)
         }
+    }
+
+    const handleCloseNotification = () => {
+        setShowNotification(false)
+        router.push('/login')
     }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#4DD0E1] p-4 relative overflow-hidden">
-            
+
             {/* Button Back */}
-            <a 
+            <a
                 href="/resetpassword/verify"
                 className="absolute top-4 left-4 z-50 bg-white hover:bg-gray-100 border-3 border-black p-2 rounded-full shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] transition-all"
             >
@@ -53,7 +62,7 @@ export default function ChangePasswordPage() {
 
             {/* Card Utama */}
             <div className="bg-gray-100 border-4 md:border-[6px] border-black p-6 md:p-8 w-full max-w-md shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] md:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] relative z-10">
-                
+
                 {/* Ikon Kamera */}
                 <div className="flex justify-center mb-4">
                     <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full border-4 border-black flex items-center justify-center shadow-lg">
@@ -66,7 +75,7 @@ export default function ChangePasswordPage() {
                 <h1 className="text-3xl md:text-4xl font-black text-center mb-2 text-black">
                     Ubah Kata Sandi
                 </h1>
-                
+
                 {/* Subjudul */}
                 <p className="text-center text-sm md:text-base font-bold text-gray-600 mb-6">
                     Masukkan password baru kamu
@@ -74,7 +83,7 @@ export default function ChangePasswordPage() {
 
                 {/* Form */}
                 <form onSubmit={handleChangePassword} className="space-y-4">
-                    
+
                     {/* Password Baru */}
                     <div>
                         <label className="block text-sm font-bold text-black mb-2">
@@ -132,6 +141,9 @@ export default function ChangePasswordPage() {
                     </button>
                 </form>
             </div>
+
+            {/* Notifikasi */}
+            {showNotification && <UbahPasswordNotification onClose={handleCloseNotification} />}
         </div>
     )
 }
