@@ -1,8 +1,8 @@
 'use client'
 
-import { User, Coins, Zap, Lock, LogOut, Camera } from 'lucide-react'
+import { User, Zap, Lock, LogOut, Camera } from 'lucide-react'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/Toast'
 
@@ -18,27 +18,30 @@ export default function DashboardPage() {
     const router = useRouter()
     const { showToast } = useToast()
 
-    const framesData = [
-        { id: 1, name: 'STYLE', category: 'Clasico', price: 0, image: '/images/frame 1.png', imageFull: 'https://i.postimg.cc/Wbd2bPvJ/IMG_0857.png' },
-        { id: 2, name: 'POLAROID', category: 'Cute', price: 20, image: '/images/frame 2.png', imageFull: 'https://i.postimg.cc/7Yjq5QH3/IMG_0844.png' },
-        { id: 3, name: 'DANCE', category: 'Estetik', price: 25, image: '/images/frame 3.png', imageFull: 'https://i.postimg.cc/dthqtKYY/IMG_0858.png' },
-        { id: 4, name: 'GAMER', category: 'Estetik', price: 25, image: '/images/frame 4.png', imageFull: 'https://i.postimg.cc/Wbd2bPvJ/IMG_0857.png' },
-        { id: 5, name: 'RETRO', category: 'Clasico', price: 20, image: '/images/frame 2.png', imageFull: 'https://i.postimg.cc/7Yjq5QH3/IMG_0844.png' },
-        { id: 6, name: 'NEON', category: 'Cute', price: 25, image: '/images/frame 3.png', imageFull: 'https://i.postimg.cc/dthqtKYY/IMG_0858.png' },
-    ]
+    const framesData = useMemo(() => [
+        { id: 1, name: 'STYLE', category: 'Clasico', price: 0, thumbnail: '/images/frame 1.png', image: '/frames/frame1.png' },
+        { id: 2, name: 'POLAROID', category: 'Cute', price: 20, thumbnail: '/images/frame 2.png', image: '/frames/frame2.png' },
+        { id: 3, name: 'DANCE', category: 'Estetik', price: 25, thumbnail: '/images/frame 3.png', image: '/frames/frame3.png' },
+        { id: 4, name: 'GAMER', category: 'Estetik', price: 25, thumbnail: '/images/frame 1.png', image: '/frames/frame1.png' },
+        { id: 5, name: 'RETRO', category: 'Clasico', price: 20, thumbnail: '/images/frame 2.png', image: '/frames/frame2.png' },
+        { id: 6, name: 'NEON', category: 'Cute', price: 25, thumbnail: '/images/frame 3.png', image: '/frames/frame3.png' },
+    ], [])
 
-    const frames = framesData
-        .filter(f => selectedCategory === 'Semua' || f.category === selectedCategory)
-        .map(f => ({
-            ...f,
-            locked: !unlockedFrames.includes(f.id)
-        }))
+    const frames = useMemo(() => 
+        framesData
+            .filter(f => selectedCategory === 'Semua' || f.category === selectedCategory)
+            .map(f => ({
+                ...f,
+                locked: !unlockedFrames.includes(f.id)
+            })),
+        [framesData, selectedCategory, unlockedFrames]
+    )
 
-    const handleFrameClick = (frame: typeof frames[0]) => {
+    const handleFrameClick = useCallback((frame: typeof frames[0]) => {
         setSelectedFrame(frame.id)
-    }
+    }, [])
 
-    const handleUseFrame = () => {
+    const handleUseFrame = useCallback(() => {
         const frame = framesData.find(f => f.id === selectedFrame)
         if (!frame) return
 
@@ -49,9 +52,9 @@ export default function DashboardPage() {
         } else {
             showToast(`Yeay! Menggunakan frame ${frame.name}!`, 'success')
         }
-    }
+    }, [framesData, selectedFrame, unlockedFrames, showToast])
 
-    const confirmBuy = () => {
+    const confirmBuy = useCallback(() => {
         const frame = framesData.find(f => f.id === selectedFrame)
         if (!frame) return
 
@@ -64,25 +67,30 @@ export default function DashboardPage() {
             showToast(`Ups! Koin kamu kurang untuk beli frame ${frame.name}.`, 'error')
             setShowBuyModal(false)
         }
-    }
+    }, [framesData, selectedFrame, userCoins, unlockedFrames, showToast])
 
-    const handleLogout = () => {
+    const handleLogout = useCallback(() => {
         setShowLogoutModal(true)
-    }
+    }, [])
 
-    const confirmLogout = () => {
+    const confirmLogout = useCallback(() => {
         router.push('/login')
-    }
+    }, [router])
 
-    const currentFrame = framesData.find(f => f.id === selectedFrame) || framesData[0]
-    const isCurrentFrameLocked = !unlockedFrames.includes(selectedFrame)
+    const currentFrame = useMemo(() => 
+        framesData.find(f => f.id === selectedFrame) || framesData[0],
+        [framesData, selectedFrame]
+    )
+    
+    const isCurrentFrameLocked = useMemo(() => 
+        !unlockedFrames.includes(selectedFrame),
+        [unlockedFrames, selectedFrame]
+    )
 
     return (
         <div className="min-h-screen bg-[#4DD0E1] p-4 md:p-8">
-            {/* Header */}
             <div className="bg-[#FFD93D] border-4 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-4 md:p-6 mb-6">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                    {/* Title */}
                     <div className="flex flex-col items-center md:items-start">
                         <div className="bg-[#23D73A] border-3 border-black shadow-[4px_4px_0_rgba(0,0,0,1)] px-4 py-1 inline-block -rotate-1 mb-2">
                             <h1 className="text-2xl md:text-3xl font-black text-black tracking-wide">SNAP BOOTH!</h1>
@@ -90,7 +98,6 @@ export default function DashboardPage() {
                         <p className="text-xl md:text-2xl font-black text-black">Hai, Iswara!</p>
                     </div>
 
-                    {/* Menu Buttons */}
                     <div className="flex gap-3 flex-wrap justify-center">
                         <button
                             onClick={() => router.push('/editprofile')}
@@ -109,7 +116,6 @@ export default function DashboardPage() {
                                 <span>{userCoins} coins</span>
                             </button>
 
-                            {/* Riwayat Transaksi Tooltip */}
                             {showHistory && (
                                 <div className="absolute top-[120%] left-[50%] -translate-x-1/2 w-48 bg-white border-4 border-black rounded-lg shadow-[4px_4px_0_rgba(0,0,0,1)] p-3 z-[100] animate-in fade-in zoom-in duration-200">
                                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-4 border-l-4 border-black rotate-45"></div>
@@ -138,22 +144,17 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Section - Frame Selection */}
                 <div className="lg:col-span-2">
                     <div className="bg-[#FFD93D] border-4 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 relative">
-                        {/* Pink Label */}
                         <div className="absolute -top-4 left-6 bg-[#FF6B9D] border-3 border-black rounded-lg px-4 py-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] rotate-[-2deg] z-10">
                             <p className="font-bold text-sm md:text-base text-black">Yang orang suka!, kalau kamu?</p>
                         </div>
 
-                        {/* Green Label */}
                         <div className="absolute -top-4 right-6 bg-[#6BCF7F] border-3 border-black rounded-lg px-4 py-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] rotate-[2deg] z-10 hidden sm:block">
                             <p className="font-bold text-sm md:text-base text-black">Frame seru kami yang lain!</p>
                         </div>
 
-                        {/* Tabs */}
                         <div className="flex flex-wrap gap-2 md:gap-4 mb-6 mt-6 pt-2 relative z-0">
                             {['Semua', 'Clasico', 'Cute', 'Estetik'].map(cat => (
                                 <button
@@ -166,7 +167,6 @@ export default function DashboardPage() {
                             ))}
                         </div>
 
-                        {/* Frame Grid */}
                         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 pb-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                             {frames.map((frame) => (
                                 <div
@@ -177,10 +177,12 @@ export default function DashboardPage() {
                                 >
                                     <div className="relative aspect-square w-full mb-3 rounded-lg overflow-hidden bg-gray-100 border-2 border-dashed border-gray-400">
                                         <Image
-                                            src={frame.image}
+                                            src={frame.thumbnail}
                                             alt={frame.name}
                                             fill
                                             className="object-contain"
+                                            loading="lazy"
+                                            sizes="(max-width: 768px) 50vw, 33vw"
                                         />
                                         {frame.locked && (
                                             <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
@@ -190,15 +192,30 @@ export default function DashboardPage() {
                                     </div>
 
                                     {frame.price === 0 ? (
-                                        <button className="w-full bg-[#6BCF7F] border-3 border-black rounded-lg py-1 md:py-2 font-black text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-sm md:text-base cursor-pointer">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleFrameClick(frame);
+                                            }}
+                                            className="w-full bg-[#6BCF7F] border-3 border-black rounded-lg py-1 md:py-2 font-black text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] text-sm md:text-base cursor-pointer hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                                             FREE
                                         </button>
                                     ) : frame.locked ? (
-                                        <button className="w-full bg-[#6BCF7F] border-3 border-black rounded-lg py-1 md:py-2 font-black text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-1 text-sm md:text-base cursor-pointer">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleFrameClick(frame);
+                                            }}
+                                            className="w-full bg-[#6BCF7F] border-3 border-black rounded-lg py-1 md:py-2 font-black text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-1 text-sm md:text-base cursor-pointer hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                                             {frame.price} Koin
                                         </button>
                                     ) : (
-                                        <button className="w-full bg-[#6BCF7F] border-3 border-black rounded-lg py-1 md:py-2 font-black text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-1 text-sm md:text-base cursor-pointer">
+                                        <button 
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleFrameClick(frame);
+                                            }}
+                                            className="w-full bg-[#6BCF7F] border-3 border-black rounded-lg py-1 md:py-2 font-black text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-1 text-sm md:text-base cursor-pointer hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all">
                                             Pakai
                                         </button>
                                     )}
@@ -224,22 +241,29 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Right Section - Preview */}
                 <div className="relative">
-                    {/* Decorative Lightning */}
                     <Zap className="absolute -top-6 -left-6 z-10 text-[#FFD93D] fill-[#FFD93D] w-14 h-14 drop-shadow-[4px_4px_0px_rgba(0,0,0,1)] rotate-[-15deg]" />
                     <Zap className="absolute -bottom-6 -right-6 z-10 text-[#FFD93D] fill-[#FFD93D] w-16 h-16 drop-shadow-[4px_4px_0px_rgba(0,0,0,1)] rotate-[15deg]" />
 
                     <div className="bg-white border-4 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] p-6 z-0 relative flex flex-col items-center">
                         <h2 className="text-xl md:text-2xl font-black text-black mb-4 w-full text-center">Frame pilihan kamu</h2>
 
-                        <div className="relative w-full max-w-[200px] aspect-[1/2.5] mb-6 overflow-hidden bg-transparent flex justify-center drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-                            <Image
-                                src={currentFrame.imageFull}
-                                alt="Selected Frame"
-                                fill
-                                className="object-contain"
-                            />
+                        <div className="relative w-full max-w-[350px] aspect-[3/4] mb-6 overflow-hidden bg-transparent flex justify-center items-center">
+                            {currentFrame && (
+                                <Image
+                                    key={selectedFrame}
+                                    src={currentFrame.image}
+                                    alt={currentFrame.name}
+                                    fill
+                                    className="object-contain"
+                                    priority
+                                />
+                            )}
+                        </div>
+                        
+                        <div className="text-center mb-4">
+                            <p className="text-lg font-black text-black">{currentFrame.name}</p>
+                            <p className="text-sm font-bold text-gray-600">{currentFrame.category}</p>
                         </div>
 
                         <button
@@ -252,7 +276,6 @@ export default function DashboardPage() {
                 </div>
             </div>
 
-            {/* Buy Confirmation Modal */}
             {showBuyModal && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-4">
                     <div className="bg-white border-[6px] border-black rounded-[2rem] p-8 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-sm w-full text-center animate-in fade-in zoom-in duration-200">
@@ -275,7 +298,6 @@ export default function DashboardPage() {
                 </div>
             )}
 
-            {/* Logout Modal */}
             {showLogoutModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
                     <div className="bg-white border-[6px] border-black rounded-[2rem] p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] max-w-lg w-full text-center animate-in fade-in zoom-in duration-200">
