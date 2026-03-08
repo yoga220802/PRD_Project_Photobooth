@@ -2,6 +2,10 @@
 
 Aplikasi photobooth berbasis web modern dengan gaya **Neobrutalism UI**. Memungkinkan pengguna mengambil foto dengan frame eksklusif, melakukan pembayaran digital via Midtrans, dan menerima hasil foto secara instan melalui email.
 
+---
+
+
+
 ## Tech Stack
 
 - **Frontend**: Next.js 14 (App Router), React 18, Tailwind CSS
@@ -127,3 +131,22 @@ import LoadingScreen from '@/components/LoadingScreen';
 ### Halaman Testing
 
 Gunakan route `/test-loading` untuk melihat preview semua komponen UI (Error, Loading, Toast) dalam satu tempat sebelum diimplementasikan ke fitur baru.
+
+
+
+## 🚀 Update Terkini (28 Februari) - (Fajrin)
+
+### Dashboard Refinements
+- **Mekanisme Navigasi Profil:** Menautkan tombol *"Profil Kamu"* untuk *routing* langsung menuju halaman `/editprofile`.
+- **Header & Antarmuka Gaya Baru:** Penyesuaian skema pewarnaan Neo-brutalist untuk tombol utama (*profil, koin, top-up, & logout*), serta perbaikan komposisi tata letak header ("Hai, Iswara!") berikut aksen miring yang mencolok.
+- **Sistem Frame Diperluas:** 
+  - Penambahan menu interaktif filter tab berdasarkan kategori (Semua, Clasico, Cute, Estetik).
+  - Peningkatan proporsi layout pratinjau "Frame pilihan kamu" agar selaras dengan gambar poster foto yang vertikal memanjang.
+  - Tampilan daftar frame yang mendukung *custom scrollbar*.
+- **Sistem Pembelian Cerdas:** Implementasi pop-up *(modal dialog buy frame)* bergaya Neo-brutalist untuk meminta konfirmasi sebelum koin berkurang.
+- **Riwayat Saldo Interaktif:** Menghadirkan miniatur *tooltip dropdown* yang muncul saat jumlah *"coins"* ditekan, menunjukkan riwayat *"Terakhir top up"*.
+
+### Edit Profil & Bug Fixes
+- **TypeScript Integration:** Pembenahan properti *types interface* (`NeoFolderInputProps`) untuk menghilangkan galat merah (implicitly `any`) pada *props* input komponen.
+- **Konfirmasi Log-out Pintar:** Logika khusus ditambahkan pada tombol *Keluar* melalui konfirmasi modal bertuliskan *"Yakin mau cabut?"* yang menyinkronkan rute kembali ke `/login`.
+- **Navigasi Fleksibel:** Tombol *back* berhasil diarahkan secara fungsional ke dalam `dashboard`.
