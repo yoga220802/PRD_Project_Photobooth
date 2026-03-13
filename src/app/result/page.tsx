@@ -13,10 +13,14 @@ import {
 } from "lucide-react";
 
 import LoadingNotifikasi from "@/components/result/loadingresult";
+import BerhasilResult from "@/components/result/berhasilresult";
 
 const ResultPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading...");
+
+  const [successMessage, setSuccessMessage] = useState("Sukses!");
+  const [showSuccess, setShowSuccess] = useState(false);
 
   // Dummy data untuk foto hasil
   const photoResults = [
@@ -31,10 +35,15 @@ const ResultPage = () => {
       // Simulasi proses download
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      setLoadingMessage("Foto berhasil diunduh!");
+      // Setelah loading selesai
+      setIsLoading(false);
+      setSuccessMessage("Foto berhasil diunduh!");
+      setShowSuccess(true);
+
+      // Auto close success message after 3 seconds
       setTimeout(() => {
-        setIsLoading(false);
-      }, 1500);
+        setShowSuccess(false);
+      }, 3000);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -49,10 +58,15 @@ const ResultPage = () => {
       // Simulasi proses generate QR Code
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Logic untuk QR Code
-      console.log("QR Code clicked");
-
+      // Setelah loading selesai
       setIsLoading(false);
+      setSuccessMessage("QR Code berhasil dibuat!");
+      setShowSuccess(true);
+
+      // Auto close success message after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -67,10 +81,15 @@ const ResultPage = () => {
       // Simulasi proses send email
       await new Promise((resolve) => setTimeout(resolve, 2500));
 
-      // Logic untuk Email
-      console.log("Email clicked");
-
+      // Setelah loading selesai
       setIsLoading(false);
+      setSuccessMessage("Email berhasil dikirim!");
+      setShowSuccess(true);
+
+      // Auto close success message after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -85,10 +104,15 @@ const ResultPage = () => {
       // Simulasi proses print
       await new Promise((resolve) => setTimeout(resolve, 1800));
 
-      // Logic untuk Print
-      console.log("Print clicked");
-
+      // Setelah loading selesai
       setIsLoading(false);
+      setSuccessMessage("Foto berhasil dicetak!");
+      setShowSuccess(true);
+
+      // Auto close success message after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
@@ -97,6 +121,16 @@ const ResultPage = () => {
 
   return (
     <div className="min-h-screen bg-[#D67FCE] relative flex flex-col">
+      {/* Loading Notifikasi */}
+      <LoadingNotifikasi message={loadingMessage} isVisible={isLoading} />
+
+      {/* Berhasil Notifikasi */}
+      <BerhasilResult
+        message={successMessage}
+        isVisible={!isLoading && showSuccess}
+        onClose={() => setShowSuccess(false)}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between px-8 py-6">
         {/* Back Button */}
@@ -229,9 +263,6 @@ const ResultPage = () => {
           </div>
         </div>
       </div>
-
-      {/* Loading Notifikasi */}
-      <LoadingNotifikasi message={loadingMessage} isVisible={isLoading} />
     </div>
   );
 };
