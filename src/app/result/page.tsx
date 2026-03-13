@@ -12,7 +12,7 @@ import {
   QrCode,
 } from "lucide-react";
 
-import LoadingNotifikasi from "@/components/notifikasi/loadingnotifikasi";
+import LoadingNotifikasi from "@/components/result/loadingresult";
 
 const ResultPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -31,10 +31,10 @@ const ResultPage = () => {
       // Simulasi proses download
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Logic untuk download
-      console.log("Download clicked");
-
-      setIsLoading(false);
+      setLoadingMessage("Foto berhasil diunduh!");
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1500);
     } catch (error) {
       console.error(error);
       setIsLoading(false);
