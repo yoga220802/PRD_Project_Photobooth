@@ -17,6 +17,8 @@ import BerhasilResult from "@/components/result/berhasilresult";
 import ChooseFilter from "@/components/result/pilihfilter";
 import ChooseFrame from "@/components/result/pilihframe";
 
+type FrameType = "wild-rebel" | "party-celebration" | "disco" | null;
+
 const ResultPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading...");
@@ -28,15 +30,69 @@ const ResultPage = () => {
 
   const [showFrame, setShowFrame] = useState(false);
 
+  const [selectedFrame, setSelectedFrame] = useState<FrameType>("wild-rebel");
+
+  // Mapping frame type ke gambar
+  const frameMapping = {
+    "wild-rebel": { src: "/frames/frame1.png", label: "Wild Rebel" },
+    "party-celebration": {
+      src: "/frames/frame2.png",
+      label: "Party Celebration",
+    },
+    disco: { src: "/frames/frame3.png", label: "Disco" },
+  };
+
   const photoResults = [
-    { id: 1, src: "/frames/frame1.png", label: "WILD REBEL" },
+    {
+      id: 1,
+      src: selectedFrame
+        ? frameMapping[selectedFrame].src
+        : "/frames/frame1.png",
+      label: selectedFrame ? frameMapping[selectedFrame].label : "Wild Rebel",
+    },
   ];
+
+  const handleSelectFrame = (frameType: FrameType) => {
+    if (frameType) {
+      setSelectedFrame(frameType);
+      console.log("Frame selected:", frameType);
+    }
+  };
+
+  const handleApplyFrame = async (frameType: FrameType) => {
+    setIsLoading(true);
+    setLoadingMessage("Menerapkan frame...");
+    setShowFrame(false);
+
+    try {
+      // Simulasi proses apply frame
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Update selected frame
+      if (frameType) {
+        setSelectedFrame(frameType);
+      }
+
+      // Show success message
+      setIsLoading(false);
+      setSuccessMessage(`Frame ${frameType} berhasil diterapkan!`);
+      setShowSuccess(true);
+
+      // Auto close success message after 3 seconds
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
+  };
 
   const handleFrame = async () => {
     setIsLoading(true);
     setLoadingMessage("Memuat Frame...");
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       setIsLoading(false);
       setShowFrame(true);
     } catch (error) {
@@ -166,7 +222,13 @@ const ResultPage = () => {
         onClose={() => setShowFilter(false)}
       />
 
-      <ChooseFrame isVisible={showFrame} onClose={() => setShowFrame(false)} />
+      <ChooseFrame
+        isVisible={showFrame}
+        onClose={() => setShowFrame(false)}
+        onSelectFrame={handleSelectFrame}
+        onApplyFrame={handleApplyFrame}
+        currentFrame={selectedFrame}
+      />
 
       {/* Header */}
       <div className="flex items-center justify-between px-8 py-6">
