@@ -14,6 +14,8 @@ import {
 
 import LoadingNotifikasi from "@/components/result/loadingresult";
 import BerhasilResult from "@/components/result/berhasilresult";
+import ChooseFilter from "@/components/result/pilihfilter";
+import ChooseFrame from "@/components/result/pilihframe";
 
 const ResultPage = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,10 +24,38 @@ const ResultPage = () => {
   const [successMessage, setSuccessMessage] = useState("Sukses!");
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Dummy data untuk foto hasil
+  const [showFilter, setShowFilter] = useState(false);
+
+  const [showFrame, setShowFrame] = useState(false);
+
   const photoResults = [
     { id: 1, src: "/frames/frame1.png", label: "WILD REBEL" },
   ];
+
+  const handleFrame = async () => {
+    setIsLoading(true);
+    setLoadingMessage("Memuat Frame...");
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setIsLoading(false);
+      setShowFrame(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleFilter = async () => {
+    setIsLoading(true);
+    setLoadingMessage("Memuat Filter...");
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setIsLoading(false);
+      setShowFilter(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleDownload = async () => {
     setIsLoading(true);
@@ -131,6 +161,13 @@ const ResultPage = () => {
         onClose={() => setShowSuccess(false)}
       />
 
+      <ChooseFilter
+        isVisible={showFilter}
+        onClose={() => setShowFilter(false)}
+      />
+
+      <ChooseFrame isVisible={showFrame} onClose={() => setShowFrame(false)} />
+
       {/* Header */}
       <div className="flex items-center justify-between px-8 py-6">
         {/* Back Button */}
@@ -187,18 +224,38 @@ const ResultPage = () => {
             {/* Filter Options */}
             <div className="flex flex-col gap-4">
               {/* Tambah Filter */}
-              <div className="btn-neo bg-[#ffffff] border-4 border-black rounded-2xl px-12 py-4">
+              <button
+                onClick={handleFilter}
+                className="btn-neo relative bg-[#ffffff] border-4 border-black rounded-2xl px-12 py-4"
+              >
+                <Image
+                  src="/icon/star.png"
+                  alt="Bintang"
+                  width={52}
+                  height={52}
+                  className="absolute -left-4 -top-1 -translate-y-1/2"
+                />
                 <span className="text-black font-black text-xl">
                   Tambah filter!
                 </span>
-              </div>
+              </button>
 
               {/* Ganti Frame */}
-              <div className="btn-neo bg-[#A9D965] border-4 border-black rounded-2xl px-12 py-4">
+              <button
+                onClick={handleFrame}
+                className="btn-neo relative bg-[#A9D965] border-4 border-black rounded-2xl px-12 py-4"
+              >
+                <Image
+                  src="/icon/star.png"
+                  alt="Bintang"
+                  width={60}
+                  height={60}
+                  className="absolute -right-5 top-1.5 -translate-y-1/2"
+                />
                 <span className="text-black font-black text-xl">
                   Ganti frame?
                 </span>
-              </div>
+              </button>
             </div>
           </div>
 
