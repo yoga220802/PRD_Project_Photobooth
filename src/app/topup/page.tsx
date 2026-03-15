@@ -20,6 +20,11 @@ interface PaymentMethod {
   badge?: string;
 }
 
+interface ToastState {
+  show: boolean;
+  message: string;
+}
+
 export default function TopUpPage() {
   const router = useRouter();
   const [userCoins] = useState(100);
@@ -29,6 +34,12 @@ export default function TopUpPage() {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [toast, setToast] = useState<ToastState>({ show: false, message: '' });
+
+  const showToast = (message: string) => {
+    setToast({ show: true, message });
+    setTimeout(() => setToast({ show: false, message: '' }), 3000);
+  };
 
   const coinPackages: CoinPackage[] = [
     { id: 1, coins: 10, price: 10000, badge: 'POPULER', badgeColor: 'bg-[#C4BFC1]' },
@@ -50,8 +61,16 @@ export default function TopUpPage() {
   ];
 
   const handlePayment = async () => {
-    if (!selectedPackage || !selectedPayment) {
-      alert('Pilih paket koin dan metode pembayaran terlebih dahulu');
+    if (!selectedPackage && !selectedPayment) {
+      showToast('Pilih paket koin dan metode pembayaran terlebih dahulu');
+      return;
+    }
+    if (!selectedPackage) {
+      showToast('Pilih paket koin terlebih dahulu');
+      return;
+    }
+    if (!selectedPayment) {
+      showToast('Pilih metode pembayaran terlebih dahulu');
       return;
     }
     
@@ -84,6 +103,17 @@ export default function TopUpPage() {
 
   return (
     <>
+      {toast.show && (
+        <div className="fixed bottom-6 right-6 z-[100]">
+          <div className="bg-[#EF476F] border-4 border-black rounded-2xl px-6 py-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center gap-3 min-w-[320px]">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="2.5"/>
+              <path d="M12 8V12M12 16H12.01" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+            </svg>
+            <span className="text-white font-black text-base">{toast.message}</span>
+          </div>
+        </div>
+      )}
       {isProcessing && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
           <div className="bg-white border-4 border-black rounded-3xl p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center">
