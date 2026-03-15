@@ -100,68 +100,72 @@ export default function ChooseFrame({
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="my-6">
-        <span className="bg-[#FF4CC3] card-neo rounded-md px-16 py-4 text-2xl font-bold">
+      <div className="my-4 xl:my-6">
+        <span className="bg-[#FF4CC3] card-neo rounded-md px-10 py-3 xl:px-16 xl:py-4 text-xl xl:text-2xl font-bold">
           Frame kece kamu
         </span>
       </div>
-      <div className="relative bg-white border-4 card-neo rounded-md max-w-full min-h-max mx-auto">
-        <div className="grid relative items-center gap-12 mx-12 mt-6">
+
+      <div className="relative bg-white border-4 card-neo rounded-md max-w-[90vw] xl:max-w-4xl 2xl:max-w-5xl mx-auto ">
+        <div className="grid relative items-center gap-4 mx-4 mt-3 md:gap-8 md:mx-8 xl:gap-10 xl:mx-10 xl:mt-5">
           {/* Back Button */}
-          <div className="absolute -left-28 -top-14">
+          <div className="absolute z-99 -left-20 xl:-left-28 -top-10 xl:-top-14">
             <button
               onClick={onClose}
-              className="btn-neo rotate-[-12deg] card-neo rounded-md px-4 py-2 font-bold text-2xl"
+              className="btn-neo rotate-[-12deg] card-neo rounded-md px-3 py-1.5 xl:px-4 xl:py-2 font-bold text-lg xl:text-2xl"
             >
               Kembali
             </button>
           </div>
 
           {/* Frame */}
-          <div className="flex flex-row mx-auto justify-center mb-8 ">
+          <div className="flex flex-row mx-auto justify-center mb-6 xl:mb-8">
             <button
               className={currentIndex === 0 ? "invisible" : ""}
               onClick={prevFrames}
             >
-              <ArrowBigLeft size={64} />
+              <ArrowBigLeft size={48} className="xl:w-16 xl:h-16" />
             </button>
+
             {visibleFrames.map((frameItem) => (
               <div
                 key={frameItem.id}
                 className="flex mx-auto relative hover:scale-105 cursor-pointer transition-transform duration-300"
               >
-                <div className="flex items-center px-8">
+                <div className="flex items-center px-4 xl:px-8">
                   <Image
                     src={frameItem.src}
                     alt={frameItem.name}
-                    width={200}
-                    height={200}
+                    width={160}
+                    height={160}
                     onClick={() => frameHandle(frameItem.id, frameItem.type)}
-                    className={
+                    className={`xl:!w-[200px] xl:!h-auto ${
                       activeFrame === frameItem.id
-                        ? `border-8 border-yellow-400 mx-auto rounded-md`
+                        ? "border-8 border-yellow-400 mx-auto rounded-md"
                         : "card-neo rounded-md mx-auto"
-                    }
+                    }`}
                   />
                 </div>
               </div>
             ))}
+
             <button
               className={
-                currentIndex + itemsPerView >= frame.length ? `invisible` : ""
+                currentIndex + itemsPerView >= frame.length ? "invisible" : ""
               }
               onClick={nextFrames}
             >
-              <ArrowBigRight size={64} />
+              <ArrowBigRight size={48} className="xl:w-16 xl:h-16" />
             </button>
           </div>
         </div>
       </div>
-      <div className="z-12 mt-8">
+
+      <div className="z-12 mt-6 xl:mt-8">
         <button
           onClick={handleApplySelectedFrame}
           disabled={activeFrame === null}
-          className={`btn-neo rounded-md px-8 py-4 text-2xl font-bold transition-all ${
+          className={`btn-neo rounded-md px-6 py-3 xl:px-8 xl:py-4 text-xl xl:text-2xl font-bold transition-all ${
             activeFrame === null
               ? "opacity-50 cursor-not-allowed"
               : "hover:scale-105"
