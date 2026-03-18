@@ -71,14 +71,19 @@ export default function ChooseFilter({
           </div>
 
           {/* Frame Preview */}
-          <div className="card-neo flex flex-col items-center">
-            <Image
-              src={frame[0].src}
-              alt={frame[0].name}
-              width={170}
-              height={170}
-              className="w-24 h-auto xl:w-[170px]"
-            />
+          <div className="relative flex flex-col items-center">
+            <div className="card-neo flex flex-col items-center">
+              <Image
+                src={frame[0].src}
+                alt={frame[0].name}
+                width={170}
+                height={170}
+                className="w-12 h-auto xl:w-[170px]"
+              />
+            </div>
+            <button className="btn-neo bg-[#468AFF] rounded-lg absolute -bottom-1 -left-1 rotate-[12deg] px-3 py-1.5 xl:px-4 xl:py-2 text-sm xl:text-base font-bold">
+              Pake filter ini
+            </button>
           </div>
 
           {/* Filter Options */}
