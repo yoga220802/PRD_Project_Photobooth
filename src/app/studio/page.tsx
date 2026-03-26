@@ -1,17 +1,42 @@
 "use client";
 import IzinKamera from "@/components/studio/izinkamera";
 import KameraDitolak from "@/components/studio/kameraditolak";
-import { ArrowLeft, LucideArrowBigDown } from "lucide-react";
+import DropdownFilter from "@/components/studio/DropdownFilter";
+import {
+  ArrowLeft,
+  LucideArrowBigDown,
+  LucideArrowBigUp,
+  Check,
+  Camera,
+} from "lucide-react";
+
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
+import Link from "next/link";
 
 type CameraPermission = "checking" | "prompt" | "granted" | "denied";
+
+// Label untuk setiap tombol capture
+const CAPTURE_LABELS = ["Cekrek 1", "Cekrek 2", "Cekrek 3"] as const;
+const MAX_PHOTOS = 3;
 
 const Studio = () => {
   const [cameraPermission, setCameraPermission] =
     useState<CameraPermission>("checking");
-  const videoRef = useRef(null);
+  const webcamRef = useRef<Webcam>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  // State untuk menyimpan hasil foto (3 slot)
+  const [capturedPhotos, setCapturedPhotos] = useState<(string | null)[]>(
+    Array(MAX_PHOTOS).fill(null),
+  );
+  // State untuk animasi flash saat foto diambil
+  const [flashSlot, setFlashSlot] = useState<number | null>(null);
+
+  // State untuk dropdown filter
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<number | null>(null);
 
   // Cek permission kamera saat halaman pertama kali dibuka
   useEffect(() => {
@@ -95,6 +120,49 @@ const Studio = () => {
     }
   }, []);
 
+  // === LOGIKA PENGAMBILAN GAMBAR ===
+  const handleCapture = useCallback(
+    (slotIndex: number) => {
+      // Guard: slot sudah terisi atau kamera belum granted
+      if (capturedPhotos[slotIndex] !== null) return;
+      if (cameraPermission !== "granted") return;
+
+      const imageSrc = webcamRef.current?.getScreenshot();
+      if (!imageSrc || !canvasRef.current) return;
+
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      const img = new Image();
+      img.onload = () => {
+        // Proses gambar ke ukuran standar photobooth 1080x1080
+        canvas.width = 1080;
+        canvas.height = 1080;
+        ctx.filter = "none";
+        ctx.drawImage(img, 0, 0, 1080, 1080);
+
+        const processedImage = canvas.toDataURL("image/jpeg", 0.9);
+
+        // Simpan ke slot yang sesuai
+        setCapturedPhotos((prev) => {
+          const updated = [...prev];
+          updated[slotIndex] = processedImage;
+          return updated;
+        });
+
+        // Trigger animasi flash pada slot
+        setFlashSlot(slotIndex);
+        setTimeout(() => setFlashSlot(null), 600);
+      };
+      img.src = imageSrc;
+    },
+    [capturedPhotos, cameraPermission],
+  );
+
+  // Hitung jumlah foto yang sudah diambil
+  const photosTaken = capturedPhotos.filter((p) => p !== null).length;
+
   return (
     <>
       <IzinKamera
@@ -106,6 +174,10 @@ const Studio = () => {
         showModal={cameraPermission === "denied"}
         onRetry={handleRetryCamera}
       />
+
+      {/* Hidden canvas untuk memproses gambar */}
+      <canvas ref={canvasRef} className="hidden" />
+
       <div className="bg-[#D67FCE] min-h-screen ">
         <header className="flex items-center gap-4 p-4">
           <button>
@@ -116,7 +188,11 @@ const Studio = () => {
           {/* Photoshot Area */}
           <div className="flex flex-col gap-6 place-items-center">
             <div className="text-center max-w-2xl card-neo rounded-[17px] bg-[#FF519C]">
-              <span className="text-2xl font-bold">Give your best smile!</span>
+              <span className="text-2xl font-bold">
+                {photosTaken >= MAX_PHOTOS
+                  ? "Semua foto sudah diambil!"
+                  : "Give your best smile!"}
+              </span>
             </div>
             <div className="bg-white max-w-md w-full rounded-2xl card-neo flex flex-col gap-6">
               {/* Main Camera / Timer Area */}
@@ -125,7 +201,9 @@ const Studio = () => {
                   <Webcam
                     mirrored={true}
                     imageSmoothing={true}
-                    ref={videoRef}
+                    audio={false}
+                    screenshotFormat="image/jpeg"
+                    ref={webcamRef}
                     autoPlay
                     playsInline
                     className="w-full h-full object-cover"
@@ -142,32 +220,93 @@ const Studio = () => {
                 )}
               </div>
 
-              {/* Thumbnails */}
+              {/* Slot Hasil Foto */}
               <div className="flex items-center justify-center gap-4">
-                <div className="bg-[#678bbd] w-[80px] h-[80px] rounded-xl card-neo"></div>
-                <div className="bg-[#678bbd] w-[80px] h-[80px] rounded-xl card-neo"></div>
-                <div className="bg-[#678bbd] w-[80px] h-[80px] rounded-xl card-neo"></div>
+                {capturedPhotos.map((photo, index) => (
+                  <div
+                    key={index}
+                    className={`
+                      w-[120px] h-[120px] rounded-xl overflow-hidden
+                      transition-all duration-300 ease-out relative
+                      ${photo ? "border-2 border-green-400 shadow-lg shadow-green-200" : "bg-[#678bbd] card-neo"}
+                      ${flashSlot === index ? "scale-110 ring-4 ring-yellow-300" : "scale-100"}
+                    `}
+                  >
+                    {photo ? (
+                      <>
+                        <img
+                          src={photo}
+                          alt={`Foto ${index + 1}`}
+                          className="w-full h-full object-cover animate-[fadeScaleIn_0.4s_ease-out]"
+                        />
+                        {/* Badge nomor foto */}
+                        <div className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
+                          <Check size={12} strokeWidth={3} />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <span className="text-white/60 text-xs font-bold">
+                          {index + 1}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
 
-              {/* Action Button */}
-              <div className="flex justify-center mt-6">
+              {/* Action Button — 1 tombol yang berubah label sesuai index */}
+              <div className="flex justify-center mt-4 mb-2">
                 <button
-                  className="bg-[#2fd336] text-black font-bold text-lg px-8 py-2 btn-neo"
-                  disabled={cameraPermission !== "granted"}
+                  onClick={() => handleCapture(photosTaken)}
+                  disabled={
+                    cameraPermission !== "granted" || photosTaken >= MAX_PHOTOS
+                  }
+                  className={`
+                    font-bold text-lg px-8 py-2 btn-neo
+                    flex items-center gap-2
+                    transition-all duration-200
+                    ${
+                      photosTaken >= MAX_PHOTOS
+                        ? "bg-[#2fd336] text-black"
+                        : "bg-[#2fd336] text-black hover:bg-[#25b82d] hover:scale-105 active:scale-95"
+                    }
+                  `}
                 >
-                  Cekrek ke 1
+                  {photosTaken >= MAX_PHOTOS ? (
+                    <Link href="/result">Lihat Hasil</Link>
+                  ) : (
+                    <>
+                      <Camera size={18} />
+                      {CAPTURE_LABELS[photosTaken]}
+                    </>
+                  )}
                 </button>
               </div>
             </div>
           </div>
           {/* Filter */}
           <div className="items-center gap-6">
-            <button className="btn-neo w-full rounded-[17px] font-bold text-lg flex items-center justify-center gap-2">
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className="btn-neo w-full rounded-[17px] font-bold text-lg flex items-center justify-center gap-2"
+            >
               Filter yang bikin foto kamu makin seru!{" "}
-              <span>
+              <span
+                className={`transition-transform duration-300 ${isFilterOpen ? "rotate-180" : ""}`}
+              >
                 <LucideArrowBigDown />
               </span>
             </button>
+
+            <DropdownFilter
+              isOpen={isFilterOpen}
+              activeFilter={activeFilter}
+              onSelectFilter={(id) => {
+                setActiveFilter(id);
+                console.log(`Filter ${id} dipilih`);
+              }}
+            />
           </div>
         </div>
       </div>
