@@ -57,10 +57,22 @@ export default function Home() {
           
           {/* Title Section */}
           <div className="relative">
-            <div className="absolute -left-8 top-4 w-20 h-20 border-4 border-black rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center bg-white">
+            {/* Left Icon - Disk/Divider */}
+            <div className="absolute -left-8 top-4 w-20 h-20 border-4 border-black rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center bg-white z-10">
               <Image
                 src="/assets/icons/header-divider.png"
                 alt="Step divider icon"
+                width={64}
+                height={64}
+                className="object-contain"
+              />
+            </div>
+
+            {/* Right Icon - Cassette */}
+            <div className="absolute -right-8 -bottom-6 w-20 h-20 border-4 border-black rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center bg-white z-10">
+              <Image
+                src="/assets/icons/cassette.png"
+                alt="Cassette icon"
                 width={64}
                 height={64}
                 className="object-contain"
