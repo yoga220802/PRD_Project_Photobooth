@@ -225,18 +225,27 @@ export default function Home() {
             >
               
               {/* Decorative stars on the left */}
-              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 space-y-4 hidden md:flex flex-col">
-                <div 
-                  className="w-16 h-16 bg-yellow-300 shadow-[5px_4px_0px_rgba(0,0,0,1)]"
-                  style={{ transform: 'rotate(24.49deg)' }}
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 space-y-6 hidden md:flex flex-col">
+                <Image
+                  src="/assets/icons/star.png"
+                  alt="Star decoration"
+                  width={48}
+                  height={48}
+                  className="object-contain"
                 />
-                <div 
-                  className="w-16 h-16 bg-yellow-300 shadow-[5px_4px_0px_rgba(0,0,0,1)]"
-                  style={{ transform: 'rotate(24.49deg)' }}
+                <Image
+                  src="/assets/icons/star.png"
+                  alt="Star decoration"
+                  width={48}
+                  height={48}
+                  className="object-contain"
                 />
-                <div 
-                  className="w-16 h-16 bg-yellow-300 shadow-[5px_4px_0px_rgba(0,0,0,1)]"
-                  style={{ transform: 'rotate(24.49deg)' }}
+                <Image
+                  src="/assets/icons/star.png"
+                  alt="Star decoration"
+                  width={48}
+                  height={48}
+                  className="object-contain"
                 />
               </div>
 
