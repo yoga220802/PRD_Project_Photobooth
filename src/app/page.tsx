@@ -120,8 +120,14 @@ export default function Home() {
               </div>
 
               {/* Arrow */}
-              <div className="hidden md:flex items-center justify-center">
-                <div className="text-3xl font-bold">→</div>
+              <div className="hidden md:flex items-center justify-center flex-shrink-0">
+                <Image
+                  src="/assets/icons/arrow.png"
+                  alt="Next step"
+                  width={48}
+                  height={48}
+                  className="object-contain"
+                />
               </div>
 
               {/* Step 2 - Frames */}
@@ -138,8 +144,14 @@ export default function Home() {
               </div>
 
               {/* Arrow */}
-              <div className="hidden md:flex items-center justify-center">
-                <div className="text-3xl font-bold">→</div>
+              <div className="hidden md:flex items-center justify-center flex-shrink-0">
+                <Image
+                  src="/assets/icons/arrow.png"
+                  alt="Next step"
+                  width={48}
+                  height={48}
+                  className="object-contain"
+                />
               </div>
 
               {/* Step 3 - Camera */}
@@ -156,8 +168,14 @@ export default function Home() {
               </div>
 
               {/* Arrow */}
-              <div className="hidden md:flex items-center justify-center">
-                <div className="text-3xl font-bold">→</div>
+              <div className="hidden md:flex items-center justify-center flex-shrink-0">
+                <Image
+                  src="/assets/icons/arrow.png"
+                  alt="Next step"
+                  width={48}
+                  height={48}
+                  className="object-contain"
+                />
               </div>
 
               {/* Step 4 - Print */}
