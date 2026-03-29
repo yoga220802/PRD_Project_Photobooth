@@ -194,7 +194,7 @@ export default function Home() {
           </div>
 
           {/* Collection Section */}
-          <div className="bg-green-400 border-4 border-black rounded-3xl px-8 py-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] text-center">
+          <div className="bg-green-400 border-4 border-black rounded-3xl px-8 py-6 shadow-[7px_11px_0px_rgba(0,0,0,1)] text-center" style={{ transform: 'matrix(1, 0.01, -0.01, 1, 0, 0)' }}>
             <h3 className="text-3xl md:text-4xl font-black uppercase tracking-wide">
               Lihat koleksi foto keren ini!
             </h3>
@@ -204,55 +204,88 @@ export default function Home() {
       </div>
 
       {/* GALLERY SHOWCASE SECTION */}
-      <div className="px-6 pb-16">
-        <div className="max-w-6xl mx-auto">
+      <div className="px-6 pb-20">
+        <div className="max-w-7xl mx-auto">
           <div className="relative">
-            {/* Rainbow decoration - Neo Boohoo text */}
-            <div className="absolute -top-8 -right-8 text-4xl font-black text-black transform rotate-12">
-              NEO<br />BOOHOO!
+            {/* Rainbow decoration - Neo Boohoo */}
+            <div className="absolute -top-8 -right-16 md:-right-32 z-20 w-40 h-40 md:w-64 md:h-64">
+              <Image
+                src="/assets/decorations/neo-boohoo.png"
+                alt="Neo Boohoo decoration"
+                width={280}
+                height={280}
+                className="object-contain w-full h-full"
+              />
             </div>
 
             {/* Gallery Container */}
-            <div className="bg-yellow-400 border-4 border-black rounded-3xl p-8 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
+            <div 
+              className="bg-yellow-400 border-4 border-black rounded-3xl p-8 md:p-12 shadow-[7px_11px_0px_rgba(0,0,0,1)] relative overflow-hidden"
+              style={{ transform: 'matrix(1, 0.01, -0.01, 1, 0, 0)' }}
+            >
               
-              {/* Frame Templates Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {frameTemplates.map((template, idx) => (
-                  <div key={idx} className={`${template.color} border-4 border-black rounded-xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:scale-105 transition-transform cursor-pointer`}>
-                    <div className="space-y-3">
-                      {/* Template label */}
-                      <div className="bg-black text-white px-2 py-1 text-xs font-bold w-fit">
-                        {template.name}
-                      </div>
-                      
-                      {/* Mock photo tiles */}
-                      <div className="space-y-2">
-                        <div className="bg-gray-200 border-2 border-black h-20 rounded flex items-center justify-center text-xs font-bold">
-                          PHOTO 1
-                        </div>
-                        <div className="bg-gray-200 border-2 border-black h-20 rounded flex items-center justify-center text-xs font-bold">
-                          PHOTO 2
-                        </div>
-                      </div>
-
-                      {/* Style label */}
-                      <div className="bg-red-400 text-black px-2 py-1 text-xs font-bold">
-                        STYLE
-                      </div>
-
-                      {/* Celebrate day label */}
-                      <div className="bg-yellow-300 text-black px-2 py-1 text-xs font-bold text-center">
-                        CELEBRATE DAY
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              {/* Decorative stars on the left */}
+              <div className="absolute left-6 top-1/2 transform -translate-y-1/2 space-y-4 hidden md:flex flex-col">
+                <div 
+                  className="w-16 h-16 bg-yellow-300 shadow-[5px_4px_0px_rgba(0,0,0,1)]"
+                  style={{ transform: 'rotate(24.49deg)' }}
+                />
+                <div 
+                  className="w-16 h-16 bg-yellow-300 shadow-[5px_4px_0px_rgba(0,0,0,1)]"
+                  style={{ transform: 'rotate(24.49deg)' }}
+                />
+                <div 
+                  className="w-16 h-16 bg-yellow-300 shadow-[5px_4px_0px_rgba(0,0,0,1)]"
+                  style={{ transform: 'rotate(24.49deg)' }}
+                />
               </div>
 
-              {/* Decorative sparks */}
-              <div className="absolute -left-12 bottom-12">
-                <div className="text-3xl">⚡</div>
-                <div className="text-3xl">⚡</div>
+              {/* Frame Templates Grid with rotations */}
+              <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 px-4">
+                
+                {/* Frame 1 - WILD (rotate -9.36deg) */}
+                <div className="flex-shrink-0 w-40 h-auto" style={{ transform: 'rotate(-9.36deg)' }}>
+                  <Image
+                    src="/assets/frames/wild-frame.png"
+                    alt="WILD Frame"
+                    width={178}
+                    height={534}
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Frame 2 - DISCO (rotate -5.58deg) */}
+                <div className="flex-shrink-0 w-40 h-auto" style={{ transform: 'rotate(-5.58deg)' }}>
+                  <Image
+                    src="/assets/frames/disco-frame.png"
+                    alt="DISCO Frame"
+                    width={178}
+                    height={534}
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Frame 3 - WILD (rotate 4.61deg) */}
+                <div className="flex-shrink-0 w-40 h-auto" style={{ transform: 'rotate(4.61deg)' }}>
+                  <Image
+                    src="/assets/frames/wild-frame.png"
+                    alt="WILD Frame"
+                    width={178}
+                    height={534}
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Frame 4 - WILD (rotate 8.19deg) */}
+                <div className="flex-shrink-0 w-40 h-auto" style={{ transform: 'rotate(8.19deg)' }}>
+                  <Image
+                    src="/assets/frames/wild-frame.png"
+                    alt="WILD Frame"
+                    width={178}
+                    height={534}
+                    className="object-contain"
+                  />
+                </div>
               </div>
             </div>
           </div>
