@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 
-interface DropdownFilterProps {
-  isOpen: boolean;
-  onSelectFilter: (filterId: number) => void;
-  activeFilter: number | null;
-}
+// CSS filter string mapping for each filter
+export const FILTER_CSS_MAP: Record<number, string> = {
+  1: "grayscale(100%)",      // Black & White
+  2: "saturate(1.8) contrast(1.2)", // Vivid
+  3: "sepia(100%)",          // Sepia
+};
 
-const filterOptions = [
+export const filterOptions = [
   {
     id: 1,
     name: "Black & White",
@@ -25,6 +26,12 @@ const filterOptions = [
     src: "/filters/sepia.png",
   },
 ];
+
+interface DropdownFilterProps {
+  isOpen: boolean;
+  onSelectFilter: (filterId: number | null) => void;
+  activeFilter: number | null;
+}
 
 export default function DropdownFilter({
   isOpen,
@@ -44,6 +51,40 @@ export default function DropdownFilter({
       "
     >
       <div className="flex items-start justify-center gap-4 xl:gap-6">
+        {/* No Filter option */}
+        <button
+          onClick={() => onSelectFilter(null)}
+          className={`
+            flex flex-col items-center gap-2 xl:gap-3
+            cursor-pointer group
+            transition-transform duration-200
+            hover:scale-105 active:scale-95
+          `}
+        >
+          <span
+            className={`
+              text-sm xl:text-base font-bold text-black
+              ${activeFilter === null ? "underline underline-offset-4 decoration-2" : ""}
+            `}
+          >
+            No Filter
+          </span>
+          <div
+            className={`
+              w-[80px] h-[80px] xl:w-[120px] xl:h-[120px]
+              rounded-xl border-4 transition-all duration-200
+              flex items-center justify-center bg-white
+              ${
+                activeFilter === null
+                  ? "border-black shadow-[4px_4px_0px_0px_#000] ring-2 ring-black"
+                  : "border-black/60 group-hover:border-black group-hover:shadow-[3px_3px_0px_0px_#000]"
+              }
+            `}
+          >
+            <span className="text-2xl">🚫</span>
+          </div>
+        </button>
+
         {filterOptions.map((filter) => (
           <button
             key={filter.id}

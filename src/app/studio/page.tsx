@@ -1,14 +1,11 @@
 "use client";
 import IzinKamera from "@/components/studio/izinkamera";
 import KameraDitolak from "@/components/studio/kameraditolak";
-import DropdownFilter from "@/components/studio/DropdownFilter";
-import {
-  ArrowLeft,
-  LucideArrowBigDown,
-  LucideArrowBigUp,
-  Check,
-  Camera,
-} from "lucide-react";
+import DropdownFilter, {
+  FILTER_CSS_MAP,
+} from "@/components/studio/DropdownFilter";
+import { usePhotobooth } from "@/context/PhotoboothContext";
+import { ArrowLeft, LucideArrowBigDown, Camera, RotateCcw } from "lucide-react";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
@@ -16,7 +13,6 @@ import Link from "next/link";
 
 type CameraPermission = "checking" | "prompt" | "granted" | "denied";
 
-// Label untuk setiap tombol capture
 const CAPTURE_LABELS = ["Cekrek 1", "Cekrek 2", "Cekrek 3"] as const;
 const MAX_PHOTOS = 3;
 
@@ -27,22 +23,42 @@ const Studio = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // State untuk menyimpan hasil foto (3 slot)
-  const [capturedPhotos, setCapturedPhotos] = useState<(string | null)[]>(
-    Array(MAX_PHOTOS).fill(null),
-  );
-  // State untuk animasi flash saat foto diambil
+  // Global state from context
+  const { capturedPhotos, activeFilter, setCapturedPhoto, setActiveFilter } =
+    usePhotobooth();
+
+  // Currently selected slot for capture/retake
+  const [selectedSlot, setSelectedSlot] = useState<number>(0);
+
+  // Flash animation state
   const [flashSlot, setFlashSlot] = useState<number | null>(null);
 
-  // State untuk dropdown filter
+  // Filter dropdown state
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<number | null>(null);
 
-  // Cek permission kamera saat halaman pertama kali dibuka
+  // Countdown timer state
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [isCountingDown, setIsCountingDown] = useState(false);
+  const countdownRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Get CSS filter string for current filter
+  const currentCssFilter =
+    activeFilter !== null ? (FILTER_CSS_MAP[activeFilter] ?? "none") : "none";
+
+  // Auto-advance selectedSlot to the first empty slot
+  useEffect(() => {
+    const firstEmpty = capturedPhotos.findIndex((p) => p === null);
+    if (firstEmpty !== -1 && capturedPhotos[selectedSlot] === null) {
+      // Only auto-advance if current slot is also empty (don't override explicit selection)
+    } else if (firstEmpty !== -1 && capturedPhotos[selectedSlot] !== null) {
+      setSelectedSlot(firstEmpty);
+    }
+  }, [capturedPhotos, selectedSlot]);
+
+  // Camera permission check
   useEffect(() => {
     const checkPermission = async () => {
       try {
-        // Gunakan Permissions API jika tersedia
         if (navigator.permissions && navigator.permissions.query) {
           const result = await navigator.permissions.query({
             name: "camera" as PermissionName,
@@ -53,11 +69,9 @@ const Studio = () => {
           } else if (result.state === "denied") {
             setCameraPermission("denied");
           } else {
-            // "prompt" — belum pernah diminta
             setCameraPermission("prompt");
           }
 
-          // Listen for permission changes (e.g. user changes from browser settings)
           result.addEventListener("change", () => {
             if (result.state === "granted") {
               setCameraPermission("granted");
@@ -68,18 +82,15 @@ const Studio = () => {
             }
           });
         } else {
-          // Fallback: Permissions API tidak tersedia, langsung tampilkan modal
           setCameraPermission("prompt");
         }
       } catch {
-        // Fallback jika query gagal
         setCameraPermission("prompt");
       }
     };
 
     checkPermission();
 
-    // Cleanup: stop media stream saat unmount
     return () => {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
@@ -87,27 +98,21 @@ const Studio = () => {
     };
   }, []);
 
-  // Handle klik "Boleh" di modal IzinKamera
   const handleAllowCamera = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      // Berhasil dapat akses kamera
       streamRef.current = stream;
-      // Stop stream ini karena react-webcam akan membuat stream sendiri
       stream.getTracks().forEach((track) => track.stop());
       setCameraPermission("granted");
     } catch {
-      // User menolak di browser prompt, atau error lainnya
       setCameraPermission("denied");
     }
   }, []);
 
-  // Handle klik "Tidak" di modal IzinKamera
   const handleDenyCamera = useCallback(() => {
     setCameraPermission("denied");
   }, []);
 
-  // Handle klik "Coba Lagi" di modal KameraDitolak
   const handleRetryCamera = useCallback(async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -115,52 +120,99 @@ const Studio = () => {
       stream.getTracks().forEach((track) => track.stop());
       setCameraPermission("granted");
     } catch {
-      // Masih ditolak
       setCameraPermission("denied");
     }
   }, []);
 
-  // === LOGIKA PENGAMBILAN GAMBAR ===
-  const handleCapture = useCallback(
-    (slotIndex: number) => {
-      // Guard: slot sudah terisi atau kamera belum granted
-      if (capturedPhotos[slotIndex] !== null) return;
-      if (cameraPermission !== "granted") return;
+  // === ACTUAL CAPTURE (called after countdown finishes) ===
+  const doCapture = useCallback(() => {
+    if (cameraPermission !== "granted") return;
 
-      const imageSrc = webcamRef.current?.getScreenshot();
-      if (!imageSrc || !canvasRef.current) return;
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (!imageSrc || !canvasRef.current) return;
 
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      const img = new Image();
-      img.onload = () => {
-        // Proses gambar ke ukuran standar photobooth 1080x1080
-        canvas.width = 1080;
-        canvas.height = 1080;
-        ctx.filter = "none";
-        ctx.drawImage(img, 0, 0, 1080, 1080);
+    const img = new Image();
+    img.onload = () => {
+      canvas.width = 1080;
+      canvas.height = 1080;
 
-        const processedImage = canvas.toDataURL("image/jpeg", 0.9);
+      // Apply the active filter to the canvas context
+      ctx.filter = currentCssFilter;
+      ctx.drawImage(img, 0, 0, 1080, 1080);
+      ctx.filter = "none"; // reset
 
-        // Simpan ke slot yang sesuai
-        setCapturedPhotos((prev) => {
-          const updated = [...prev];
-          updated[slotIndex] = processedImage;
-          return updated;
-        });
+      const processedImage = canvas.toDataURL("image/jpeg", 0.9);
 
-        // Trigger animasi flash pada slot
-        setFlashSlot(slotIndex);
-        setTimeout(() => setFlashSlot(null), 600);
-      };
-      img.src = imageSrc;
-    },
-    [capturedPhotos, cameraPermission],
-  );
+      // Save to the selected slot (via context)
+      setCapturedPhoto(selectedSlot, processedImage);
 
-  // Hitung jumlah foto yang sudah diambil
+      // Flash animation
+      setFlashSlot(selectedSlot);
+      setTimeout(() => setFlashSlot(null), 600);
+
+      // Auto-advance to next empty slot
+      const nextEmpty = capturedPhotos.findIndex(
+        (p, i) => p === null && i !== selectedSlot,
+      );
+      if (nextEmpty !== -1) {
+        setTimeout(() => setSelectedSlot(nextEmpty), 300);
+      }
+    };
+    img.src = imageSrc;
+  }, [
+    cameraPermission,
+    currentCssFilter,
+    selectedSlot,
+    capturedPhotos,
+    setCapturedPhoto,
+  ]);
+
+  // === COUNTDOWN + CAPTURE — 3 second timer before capture ===
+  const handleCapture = useCallback(() => {
+    if (cameraPermission !== "granted" || isCountingDown) return;
+
+    setIsCountingDown(true);
+    setCountdown(3);
+
+    let timeLeft = 3;
+    countdownRef.current = setInterval(() => {
+      timeLeft -= 1;
+      if (timeLeft > 0) {
+        setCountdown(timeLeft);
+      } else {
+        // Timer finished — capture!
+        clearInterval(countdownRef.current!);
+        countdownRef.current = null;
+        setCountdown(null);
+        setIsCountingDown(false);
+        doCapture();
+      }
+    }, 1000);
+  }, [cameraPermission, isCountingDown, doCapture]);
+
+  // Cleanup countdown on unmount
+  useEffect(() => {
+    return () => {
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+      }
+    };
+  }, []);
+
+  // Handle retake selected slot photo
+  const handleRetakeSlot = useCallback(() => {
+    setCapturedPhoto(selectedSlot, null);
+  }, [selectedSlot, setCapturedPhoto]);
+
+  // Click on photo slot to select it for retake
+  const handleSlotClick = useCallback((index: number) => {
+    setSelectedSlot(index);
+  }, []);
+
   const photosTaken = capturedPhotos.filter((p) => p !== null).length;
 
   return (
@@ -175,7 +227,7 @@ const Studio = () => {
         onRetry={handleRetryCamera}
       />
 
-      {/* Hidden canvas untuk memproses gambar */}
+      {/* Hidden canvas for image processing */}
       <canvas ref={canvasRef} className="hidden" />
 
       <div className="bg-[#D67FCE] min-h-screen ">
@@ -207,6 +259,7 @@ const Studio = () => {
                     autoPlay
                     playsInline
                     className="w-full h-full object-cover"
+                    style={{ filter: currentCssFilter }}
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center gap-2">
@@ -218,18 +271,38 @@ const Studio = () => {
                     </span>
                   </div>
                 )}
+
+                {/* Countdown overlay */}
+                {countdown !== null && (
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
+                    <span
+                      key={countdown}
+                      className="text-[120px] font-black text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] animate-[countdownPulse_1s_ease-out]"
+                    >
+                      {countdown}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              {/* Slot Hasil Foto */}
+              {/* Photo Slots — clickable for retake */}
               <div className="flex items-center justify-center gap-4">
                 {capturedPhotos.map((photo, index) => (
-                  <div
+                  <button
                     key={index}
+                    onClick={() => handleSlotClick(index)}
+                    title={
+                      photo
+                        ? `Klik untuk retake Foto ${index + 1}`
+                        : `Slot ${index + 1}`
+                    }
                     className={`
                       w-[120px] h-[120px] rounded-xl overflow-hidden
                       transition-all duration-300 ease-out relative
+                      cursor-pointer
                       ${photo ? "border-2 border-green-400 shadow-lg shadow-green-200" : "bg-[#678bbd] card-neo"}
                       ${flashSlot === index ? "scale-110 ring-4 ring-yellow-300" : "scale-100"}
+                      ${selectedSlot === index ? "ring-4 ring-[#FF519C] ring-offset-2 ring-offset-white scale-105" : ""}
                     `}
                   >
                     {photo ? (
@@ -239,10 +312,11 @@ const Studio = () => {
                           alt={`Foto ${index + 1}`}
                           className="w-full h-full object-cover animate-[fadeScaleIn_0.4s_ease-out]"
                         />
-                        {/* Badge nomor foto */}
-                        <div className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full w-5 h-5 flex items-center justify-center">
-                          <Check size={12} strokeWidth={3} />
-                        </div>
+                        {/* Retake overlay on selected filled slot */}
+                        {selectedSlot === index && (
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center"></div>
+                        )}
+                        {/* Check badge */}
                       </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
@@ -251,37 +325,51 @@ const Studio = () => {
                         </span>
                       </div>
                     )}
-                  </div>
+                  </button>
                 ))}
               </div>
 
-              {/* Action Button — 1 tombol yang berubah label sesuai index */}
-              <div className="flex justify-center mt-4 mb-2">
-                <button
-                  onClick={() => handleCapture(photosTaken)}
-                  disabled={
-                    cameraPermission !== "granted" || photosTaken >= MAX_PHOTOS
-                  }
-                  className={`
-                    font-bold text-lg px-8 py-2 btn-neo
-                    flex items-center gap-2
-                    transition-all duration-200
-                    ${
-                      photosTaken >= MAX_PHOTOS
-                        ? "bg-[#2fd336] text-black"
-                        : "bg-[#2fd336] text-black hover:bg-[#25b82d] hover:scale-105 active:scale-95"
-                    }
-                  `}
-                >
-                  {photosTaken >= MAX_PHOTOS ? (
-                    <Link href="/result">Lihat Hasil</Link>
-                  ) : (
-                    <>
-                      <Camera size={18} />
-                      {CAPTURE_LABELS[photosTaken]}
-                    </>
-                  )}
-                </button>
+              {/* Action Buttons */}
+              <div className="flex flex-col items-center mt-4 gap-3">
+                {photosTaken >= MAX_PHOTOS ? (
+                  <>
+                    <button
+                      onClick={handleRetakeSlot}
+                      className="font-bold text-lg px-4 py-2 btn-neo bg-[#FF519C] text-black flex items-center gap-2"
+                    >
+                      <RotateCcw size={18} />
+                      Retake Foto {selectedSlot + 1}
+                    </button>
+                    <Link
+                      href="/result"
+                      className="font-bold text-lg px-8 py-2 btn-neo bg-[#2fd336] text-black flex items-center gap-2"
+                    >
+                      Lihat Hasil
+                    </Link>
+                  </>
+                ) : (
+                  <button
+                    onClick={handleCapture}
+                    disabled={cameraPermission !== "granted" || isCountingDown}
+                    className={`
+                      font-bold text-lg px-8 py-2 btn-neo
+                      flex items-center gap-2
+                      transition-all duration-200
+                      ${
+                        isCountingDown
+                          ? "bg-gray-400 text-gray-600 cursor-not-allowed"
+                          : "bg-[#2fd336] text-black hover:bg-[#25b82d] hover:scale-105 active:scale-95"
+                      }
+                    `}
+                  >
+                    <Camera size={18} />
+                    {isCountingDown
+                      ? "Bersiap..."
+                      : capturedPhotos[selectedSlot] !== null
+                        ? `Retake ${selectedSlot + 1}`
+                        : CAPTURE_LABELS[selectedSlot]}
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -304,7 +392,6 @@ const Studio = () => {
               activeFilter={activeFilter}
               onSelectFilter={(id) => {
                 setActiveFilter(id);
-                console.log(`Filter ${id} dipilih`);
               }}
             />
           </div>

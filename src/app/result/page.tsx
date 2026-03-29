@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { usePhotobooth } from "@/context/PhotoboothContext";
 
 import {
   ArrowBigRight,
@@ -20,6 +21,7 @@ import ChooseFrame from "@/components/result/pilihframe";
 type FrameType = "wild-rebel" | "party-celebration" | "disco" | null;
 
 const ResultPage = () => {
+  const { capturedPhotos } = usePhotobooth();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("Loading...");
 
@@ -42,15 +44,10 @@ const ResultPage = () => {
     disco: { src: "/frames/frame3.png", label: "Disco" },
   };
 
-  const photoResults = [
-    {
-      id: 1,
-      src: selectedFrame
-        ? frameMapping[selectedFrame].src
-        : "/frames/frame1.png",
-      label: selectedFrame ? frameMapping[selectedFrame].label : "Wild Rebel",
-    },
-  ];
+  // Actual captured photos from studio
+  const validPhotos = capturedPhotos
+    .map((photo, index) => ({ id: index + 1, src: photo }))
+    .filter((p) => p.src !== null) as { id: number; src: string }[];
 
   const handleSelectFrame = (frameType: FrameType) => {
     if (frameType) {
@@ -265,21 +262,28 @@ const ResultPage = () => {
               style={{ width: "300px" }}
             >
               <div className="space-y-4">
-                {photoResults.map((photo) => (
-                  <div
-                    key={photo.id}
-                    className="relative bg-gray-100 rounded-xl overflow-hidden"
-                  >
-                    <Image
-                      src={photo.src}
-                      alt={photo.label}
-                      width={300}
-                      height={0}
-                      style={{ width: "100%", height: "auto" }}
-                      className="object-contain"
-                    />
+                {validPhotos.length > 0 ? (
+                  validPhotos.map((photo) => (
+                    <div
+                      key={photo.id}
+                      className="relative bg-gray-100 rounded-xl overflow-hidden"
+                    >
+                      <img
+                        src={photo.src}
+                        alt={`Foto ${photo.id}`}
+                        className="w-full h-auto object-contain"
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                    <span className="text-4xl mb-2">📷</span>
+                    <span className="font-bold">Belum ada foto</span>
+                    <span className="text-sm">
+                      Ambil foto di Studio dulu ya!
+                    </span>
                   </div>
-                ))}
+                )}
               </div>
             </div>
 
