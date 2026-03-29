@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Camera, Sparkles, DollarSign, Frame, Printer, Radio } from 'lucide-react';
+import Image from 'next/image';
+import { Camera, Sparkles } from 'lucide-react';
 
 export default function Home() {
   const frameTemplates = [
@@ -56,8 +57,14 @@ export default function Home() {
           
           {/* Title Section */}
           <div className="relative">
-            <div className="absolute -left-8 top-4 w-16 h-16 bg-gray-300 border-4 border-black rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center">
-              <Radio size={32} className="text-black" />
+            <div className="absolute -left-8 top-4 w-20 h-20 border-4 border-black rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center bg-white">
+              <Image
+                src="/assets/icons/header-divider.png"
+                alt="Step divider icon"
+                width={64}
+                height={64}
+                className="object-contain"
+              />
             </div>
             
             <div className="bg-lime-400 border-4 border-black rounded-3xl px-8 py-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
@@ -85,42 +92,72 @@ export default function Home() {
 
           {/* Process Flow */}
           <div className="mt-12">
-            <div className="flex flex-wrap items-center justify-between gap-4 md:gap-6">
+            <div className="flex flex-wrap items-center justify-between gap-2 md:gap-4">
               
               {/* Step 1 - Payment */}
-              <div className="flex-1 min-w-[120px]">
-                <div className="bg-yellow-300 border-4 border-black rounded-2xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square">
-                  <DollarSign size={48} className="text-black" />
+              <div className="flex-1 min-w-[100px]">
+                <div className="bg-yellow-300 border-4 border-black rounded-3xl p-6 shadow-[7px_11px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square hover:scale-105 transition-transform">
+                  <Image
+                    src="/assets/icons/top-up.png"
+                    alt="Top Up"
+                    width={80}
+                    height={80}
+                    className="object-contain"
+                  />
                 </div>
               </div>
 
               {/* Arrow */}
-              <div className="text-3xl font-bold hidden md:block">→</div>
+              <div className="hidden md:flex items-center justify-center">
+                <div className="text-3xl font-bold">→</div>
+              </div>
 
               {/* Step 2 - Frames */}
-              <div className="flex-1 min-w-[120px]">
-                <div className="bg-[#FF90E8] border-4 border-black rounded-2xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square">
-                  <Frame size={48} className="text-black" />
+              <div className="flex-1 min-w-[100px]">
+                <div className="bg-[#AB3DDE] border-4 border-black rounded-3xl p-6 shadow-[7px_11px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square hover:scale-105 transition-transform">
+                  <Image
+                    src="/assets/icons/frame.png"
+                    alt="Pilih Frame"
+                    width={80}
+                    height={80}
+                    className="object-contain"
+                  />
                 </div>
               </div>
 
               {/* Arrow */}
-              <div className="text-3xl font-bold hidden md:block">→</div>
+              <div className="hidden md:flex items-center justify-center">
+                <div className="text-3xl font-bold">→</div>
+              </div>
 
               {/* Step 3 - Camera */}
-              <div className="flex-1 min-w-[120px]">
-                <div className="bg-blue-300 border-4 border-black rounded-2xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square">
-                  <Camera size={48} className="text-black" />
+              <div className="flex-1 min-w-[100px]">
+                <div className="bg-[#72ACC7] border-4 border-black rounded-3xl p-6 shadow-[7px_11px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square hover:scale-105 transition-transform">
+                  <Image
+                    src="/assets/icons/camera.png"
+                    alt="Cekrek"
+                    width={80}
+                    height={80}
+                    className="object-contain"
+                  />
                 </div>
               </div>
 
               {/* Arrow */}
-              <div className="text-3xl font-bold hidden md:block">→</div>
+              <div className="hidden md:flex items-center justify-center">
+                <div className="text-3xl font-bold">→</div>
+              </div>
 
               {/* Step 4 - Print */}
-              <div className="flex-1 min-w-[120px]">
-                <div className="bg-green-400 border-4 border-black rounded-2xl p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square">
-                  <Printer size={48} className="text-black" />
+              <div className="flex-1 min-w-[100px]">
+                <div className="bg-[#4ADE80] border-4 border-black rounded-3xl p-6 shadow-[7px_11px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square hover:scale-105 transition-transform">
+                  <Image
+                    src="/assets/icons/printer.png"
+                    alt="Cetak"
+                    width={80}
+                    height={80}
+                    className="object-contain"
+                  />
                 </div>
               </div>
             </div>
