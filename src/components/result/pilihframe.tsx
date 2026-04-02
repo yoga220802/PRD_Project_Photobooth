@@ -4,7 +4,7 @@ import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
-type FrameType = "wild-rebel" | "party-celebration" | "disco" | null;
+type FrameType = "wild-rebel" | "disco" | null;
 
 interface ChooseFrameProps {
   onClose: () => void;
@@ -31,33 +31,28 @@ export default function ChooseFrame({
     },
     {
       id: 2,
-      name: "Party Celebration",
+      name: "Disco",
       src: "/frames/frame2.png",
-      type: "party-celebration" as FrameType,
+      type: "disco" as FrameType,
     },
+
     {
       id: 3,
       name: "Disco",
-      src: "/frames/frame3.png",
+      src: "/frames/frame2.png",
       type: "disco" as FrameType,
     },
     {
       id: 4,
-      name: "Party Celebration",
-      src: "/frames/frame2.png",
-      type: "party-celebration" as FrameType,
-    },
-    {
-      id: 5,
       name: "Wild Rebel",
       src: "/frames/frame1.png",
       type: "wild-rebel" as FrameType,
     },
     {
-      id: 6,
-      name: "Party Celebration",
+      id: 5,
+      name: "Disco",
       src: "/frames/frame2.png",
-      type: "party-celebration" as FrameType,
+      type: "disco" as FrameType,
     },
   ];
 
