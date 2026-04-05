@@ -5,215 +5,47 @@ import DropdownFilter, {
   FILTER_CSS_MAP,
 } from "@/components/studio/DropdownFilter";
 import { usePhotobooth } from "@/context/PhotoboothContext";
+import { usePhotoboothActions } from "@/hooks/usePhotoboothActions";
 import { ArrowLeft, LucideArrowBigDown, Camera, RotateCcw } from "lucide-react";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
 import Webcam from "react-webcam";
 import Link from "next/link";
-
-type CameraPermission = "checking" | "prompt" | "granted" | "denied";
 
 const CAPTURE_LABELS = ["Cekrek 1", "Cekrek 2", "Cekrek 3"] as const;
 const MAX_PHOTOS = 3;
 
 const Studio = () => {
-  const [cameraPermission, setCameraPermission] =
-    useState<CameraPermission>("checking");
-  const webcamRef = useRef<Webcam>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-
-  // Global state from context
   const { capturedPhotos, activeFilter, setCapturedPhoto, setActiveFilter } =
     usePhotobooth();
 
-  // Currently selected slot for capture/retake
-  const [selectedSlot, setSelectedSlot] = useState<number>(0);
-
-  // Flash animation state
-  const [flashSlot, setFlashSlot] = useState<number | null>(null);
-
-  // Filter dropdown state
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-
-  // Countdown timer state
-  const [countdown, setCountdown] = useState<number | null>(null);
-  const [isCountingDown, setIsCountingDown] = useState(false);
-  const countdownRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Get CSS filter string for current filter
-  const currentCssFilter =
-    activeFilter !== null ? (FILTER_CSS_MAP[activeFilter] ?? "none") : "none";
-
-  // Auto-advance selectedSlot to the first empty slot
-  useEffect(() => {
-    const firstEmpty = capturedPhotos.findIndex((p) => p === null);
-    if (firstEmpty !== -1 && capturedPhotos[selectedSlot] === null) {
-      // Only auto-advance if current slot is also empty (don't override explicit selection)
-    } else if (firstEmpty !== -1 && capturedPhotos[selectedSlot] !== null) {
-      setSelectedSlot(firstEmpty);
-    }
-  }, [capturedPhotos, selectedSlot]);
-
-  // Camera permission check
-  useEffect(() => {
-    const checkPermission = async () => {
-      try {
-        if (navigator.permissions && navigator.permissions.query) {
-          const result = await navigator.permissions.query({
-            name: "camera" as PermissionName,
-          });
-
-          if (result.state === "granted") {
-            setCameraPermission("granted");
-          } else if (result.state === "denied") {
-            setCameraPermission("denied");
-          } else {
-            setCameraPermission("prompt");
-          }
-
-          result.addEventListener("change", () => {
-            if (result.state === "granted") {
-              setCameraPermission("granted");
-            } else if (result.state === "denied") {
-              setCameraPermission("denied");
-            } else {
-              setCameraPermission("prompt");
-            }
-          });
-        } else {
-          setCameraPermission("prompt");
-        }
-      } catch {
-        setCameraPermission("prompt");
-      }
-    };
-
-    checkPermission();
-
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-      }
-    };
-  }, []);
-
-  const handleAllowCamera = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      streamRef.current = stream;
-      stream.getTracks().forEach((track) => track.stop());
-      setCameraPermission("granted");
-    } catch {
-      setCameraPermission("denied");
-    }
-  }, []);
-
-  const handleDenyCamera = useCallback(() => {
-    setCameraPermission("denied");
-  }, []);
-
-  const handleRetryCamera = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      streamRef.current = stream;
-      stream.getTracks().forEach((track) => track.stop());
-      setCameraPermission("granted");
-    } catch {
-      setCameraPermission("denied");
-    }
-  }, []);
-
-  // === ACTUAL CAPTURE (called after countdown finishes) ===
-  const doCapture = useCallback(() => {
-    if (cameraPermission !== "granted") return;
-
-    const imageSrc = webcamRef.current?.getScreenshot();
-    if (!imageSrc || !canvasRef.current) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const img = new Image();
-    img.onload = () => {
-      canvas.width = 1080;
-      canvas.height = 1080;
-
-      // Apply the active filter to the canvas context
-      ctx.filter = currentCssFilter;
-      ctx.drawImage(img, 0, 0, 1080, 1080);
-      ctx.filter = "none"; // reset
-
-      const processedImage = canvas.toDataURL("image/jpeg", 0.9);
-
-      // Save to the selected slot (via context)
-      setCapturedPhoto(selectedSlot, processedImage);
-
-      // Flash animation
-      setFlashSlot(selectedSlot);
-      setTimeout(() => setFlashSlot(null), 600);
-
-      // Auto-advance to next empty slot
-      const nextEmpty = capturedPhotos.findIndex(
-        (p, i) => p === null && i !== selectedSlot,
-      );
-      if (nextEmpty !== -1) {
-        setTimeout(() => setSelectedSlot(nextEmpty), 300);
-      }
-    };
-    img.src = imageSrc;
-  }, [
+  const {
     cameraPermission,
-    currentCssFilter,
     selectedSlot,
+    flashSlot,
+    isFilterOpen,
+    countdown,
+    isCountingDown,
+    currentCssFilter,
+    photosTaken,
+    webcamRef,
+    canvasRef,
+    setIsFilterOpen,
+    handleAllowCamera,
+    handleDenyCamera,
+    handleRetryCamera,
+    handleCapture,
+    handleRetakeSlot,
+    handleSlotClick,
+    handleSelectFilter,
+    maxPhotos,
+  } = usePhotoboothActions({
     capturedPhotos,
+    activeFilter,
     setCapturedPhoto,
-  ]);
-
-  // === COUNTDOWN + CAPTURE — 3 second timer before capture ===
-  const handleCapture = useCallback(() => {
-    if (cameraPermission !== "granted" || isCountingDown) return;
-
-    setIsCountingDown(true);
-    setCountdown(3);
-
-    let timeLeft = 3;
-    countdownRef.current = setInterval(() => {
-      timeLeft -= 1;
-      if (timeLeft > 0) {
-        setCountdown(timeLeft);
-      } else {
-        // Timer finished — capture!
-        clearInterval(countdownRef.current!);
-        countdownRef.current = null;
-        setCountdown(null);
-        setIsCountingDown(false);
-        doCapture();
-      }
-    }, 1000);
-  }, [cameraPermission, isCountingDown, doCapture]);
-
-  // Cleanup countdown on unmount
-  useEffect(() => {
-    return () => {
-      if (countdownRef.current) {
-        clearInterval(countdownRef.current);
-      }
-    };
-  }, []);
-
-  // Handle retake selected slot photo
-  const handleRetakeSlot = useCallback(() => {
-    setCapturedPhoto(selectedSlot, null);
-  }, [selectedSlot, setCapturedPhoto]);
-
-  // Click on photo slot to select it for retake
-  const handleSlotClick = useCallback((index: number) => {
-    setSelectedSlot(index);
-  }, []);
-
-  const photosTaken = capturedPhotos.filter((p) => p !== null).length;
+    setActiveFilter,
+    maxPhotos: MAX_PHOTOS,
+    filterCssMap: FILTER_CSS_MAP,
+  });
 
   return (
     <>
@@ -241,7 +73,7 @@ const Studio = () => {
           <div className="flex flex-col gap-6 place-items-center">
             <div className="text-center max-w-2xl card-neo rounded-[17px] bg-[#FF519C]">
               <span className="text-2xl font-bold">
-                {photosTaken >= MAX_PHOTOS
+                {photosTaken >= maxPhotos
                   ? "Semua foto sudah diambil!"
                   : "Give your best smile!"}
               </span>
@@ -331,7 +163,7 @@ const Studio = () => {
 
               {/* Action Buttons */}
               <div className="flex flex-col items-center mt-4 gap-3">
-                {photosTaken >= MAX_PHOTOS ? (
+                {photosTaken >= maxPhotos ? (
                   <>
                     <button
                       onClick={handleRetakeSlot}
@@ -390,9 +222,7 @@ const Studio = () => {
             <DropdownFilter
               isOpen={isFilterOpen}
               activeFilter={activeFilter}
-              onSelectFilter={(id) => {
-                setActiveFilter(id);
-              }}
+              onSelectFilter={handleSelectFilter}
             />
           </div>
         </div>

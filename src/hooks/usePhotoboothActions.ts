@@ -1,18 +1,42 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
+import type Webcam from "react-webcam";
 
 // --- Types ---
 export type FrameType = "wild-rebel" | "disco" | null;
+export type CameraPermission = "checking" | "prompt" | "granted" | "denied";
 
 export interface UsePhotoboothActionsProps {
-  validPhotos: { id: number; src: string }[];
-  frameMapping: Record<string, { src: string; label: string }>;
+  // Result page inputs
+  validPhotos?: { id: number; src: string }[];
+  frameMapping?: Record<string, { src: string; label: string }>;
+
+  // Studio page inputs
+  capturedPhotos?: (string | null)[];
+  activeFilter?: number | null;
+  setCapturedPhoto?: (index: number, photo: string | null) => void;
+  setActiveFilter?: (filter: number | null) => void;
+  maxPhotos?: number;
+  filterCssMap?: Record<number, string>;
 }
 
 // --- Hook ---
 export function usePhotoboothActions({
   validPhotos,
   frameMapping,
+  capturedPhotos,
+  activeFilter,
+  setCapturedPhoto,
+  setActiveFilter,
+  maxPhotos = 3,
+  filterCssMap,
 }: UsePhotoboothActionsProps) {
+  const safeValidPhotos = validPhotos ?? [];
+  const safeFrameMapping = frameMapping ?? {};
+  const safeCapturedPhotos = capturedPhotos ?? [];
+
+  const hasStudioBindings =
+    Array.isArray(capturedPhotos) && typeof setCapturedPhoto === "function";
+
   // --- States ---
   const [selectedFrame, setSelectedFrame] = useState<FrameType>("wild-rebel");
   const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +45,93 @@ export function usePhotoboothActions({
   const [showSuccess, setShowSuccess] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
   const [showFrame, setShowFrame] = useState(false);
+
+  // Studio states
+  const [cameraPermission, setCameraPermission] =
+    useState<CameraPermission>("checking");
+  const [selectedSlot, setSelectedSlot] = useState<number>(0);
+  const [flashSlot, setFlashSlot] = useState<number | null>(null);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
+  const [isCountingDown, setIsCountingDown] = useState(false);
+
+  // Studio refs
+  const webcamRef = useRef<Webcam>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const currentCssFilter =
+    activeFilter !== null && activeFilter !== undefined
+      ? (filterCssMap?.[activeFilter] ?? "none")
+      : "none";
+
+  const photosTaken = safeCapturedPhotos.filter((p) => p !== null).length;
+
+  // Keep selected slot focused on the next empty slot when current is filled.
+  useEffect(() => {
+    if (!hasStudioBindings || safeCapturedPhotos.length === 0) return;
+
+    const firstEmpty = safeCapturedPhotos.findIndex((p) => p === null);
+    if (firstEmpty !== -1 && safeCapturedPhotos[selectedSlot] !== null) {
+      setSelectedSlot(firstEmpty);
+    }
+  }, [hasStudioBindings, safeCapturedPhotos, selectedSlot]);
+
+  // Camera permission check for Studio flow.
+  useEffect(() => {
+    if (!hasStudioBindings || typeof window === "undefined") return;
+
+    let permissionStatus: PermissionStatus | null = null;
+
+    const syncPermission = () => {
+      if (!permissionStatus) return;
+      if (permissionStatus.state === "granted") {
+        setCameraPermission("granted");
+      } else if (permissionStatus.state === "denied") {
+        setCameraPermission("denied");
+      } else {
+        setCameraPermission("prompt");
+      }
+    };
+
+    const checkPermission = async () => {
+      try {
+        if (navigator.permissions && navigator.permissions.query) {
+          permissionStatus = await navigator.permissions.query({
+            name: "camera" as PermissionName,
+          });
+
+          syncPermission();
+          permissionStatus.addEventListener("change", syncPermission);
+        } else {
+          setCameraPermission("prompt");
+        }
+      } catch {
+        setCameraPermission("prompt");
+      }
+    };
+
+    checkPermission();
+
+    return () => {
+      if (permissionStatus) {
+        permissionStatus.removeEventListener("change", syncPermission);
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
+  }, [hasStudioBindings]);
+
+  // Cleanup countdown timer on unmount.
+  useEffect(() => {
+    return () => {
+      if (countdownRef.current) {
+        clearInterval(countdownRef.current);
+      }
+    };
+  }, []);
 
   // --- Internal Helpers ---
 
@@ -91,7 +202,7 @@ export function usePhotoboothActions({
   }, [runWithLoading]);
 
   const handleDownload = useCallback(async () => {
-    if (validPhotos.length === 0) {
+    if (safeValidPhotos.length === 0) {
       triggerSuccess("Belum ada foto untuk diunduh!");
       return;
     }
@@ -118,7 +229,11 @@ export function usePhotoboothActions({
 
         // Load the frame image
         const frameKey = selectedFrame || "wild-rebel";
-        const frameSrc = frameMapping[frameKey].src;
+        const frameConfig = safeFrameMapping[frameKey];
+        if (!frameConfig) {
+          throw new Error("Frame mapping is not configured");
+        }
+        const frameSrc = frameConfig.src;
 
         const frameImg = await new Promise<HTMLImageElement>(
           (resolve, reject) => {
@@ -145,8 +260,12 @@ export function usePhotoboothActions({
         // Load and draw each photo into its slot
         const slots = frameSlots[frameKey] || frameSlots["wild-rebel"];
 
-        for (let i = 0; i < Math.min(validPhotos.length, slots.length); i++) {
-          const photo = validPhotos[i];
+        for (
+          let i = 0;
+          i < Math.min(safeValidPhotos.length, slots.length);
+          i++
+        ) {
+          const photo = safeValidPhotos[i];
           const slot = slots[i];
 
           const photoImg = await new Promise<HTMLImageElement>(
@@ -216,12 +335,136 @@ export function usePhotoboothActions({
       }
     });
   }, [
-    validPhotos,
+    safeValidPhotos,
     selectedFrame,
-    frameMapping,
+    safeFrameMapping,
     runWithLoading,
     triggerSuccess,
   ]);
+
+  const handleAllowCamera = useCallback(async () => {
+    if (!hasStudioBindings || typeof window === "undefined") return;
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
+      stream.getTracks().forEach((track) => track.stop());
+      setCameraPermission("granted");
+    } catch {
+      setCameraPermission("denied");
+    }
+  }, [hasStudioBindings]);
+
+  const handleDenyCamera = useCallback(() => {
+    if (!hasStudioBindings) return;
+    setCameraPermission("denied");
+  }, [hasStudioBindings]);
+
+  const handleRetryCamera = useCallback(async () => {
+    if (!hasStudioBindings || typeof window === "undefined") return;
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      streamRef.current = stream;
+      stream.getTracks().forEach((track) => track.stop());
+      setCameraPermission("granted");
+    } catch {
+      setCameraPermission("denied");
+    }
+  }, [hasStudioBindings]);
+
+  const doCapture = useCallback(() => {
+    if (
+      !hasStudioBindings ||
+      cameraPermission !== "granted" ||
+      !setCapturedPhoto
+    ) {
+      return;
+    }
+
+    const imageSrc = webcamRef.current?.getScreenshot();
+    if (!imageSrc || !canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const img = new Image();
+    img.onload = () => {
+      canvas.width = 1080;
+      canvas.height = 1080;
+
+      ctx.filter = currentCssFilter;
+      ctx.drawImage(img, 0, 0, 1080, 1080);
+      ctx.filter = "none";
+
+      const processedImage = canvas.toDataURL("image/jpeg", 0.9);
+      setCapturedPhoto(selectedSlot, processedImage);
+
+      setFlashSlot(selectedSlot);
+      setTimeout(() => setFlashSlot(null), 600);
+
+      const nextEmpty = safeCapturedPhotos.findIndex(
+        (p, i) => p === null && i !== selectedSlot,
+      );
+      if (nextEmpty !== -1) {
+        setTimeout(() => setSelectedSlot(nextEmpty), 300);
+      }
+    };
+    img.src = imageSrc;
+  }, [
+    hasStudioBindings,
+    cameraPermission,
+    setCapturedPhoto,
+    currentCssFilter,
+    selectedSlot,
+    safeCapturedPhotos,
+  ]);
+
+  const handleCapture = useCallback(() => {
+    if (!hasStudioBindings) return;
+    if (cameraPermission !== "granted" || isCountingDown) return;
+
+    setIsCountingDown(true);
+    setCountdown(3);
+
+    let timeLeft = 3;
+    countdownRef.current = setInterval(() => {
+      timeLeft -= 1;
+      if (timeLeft > 0) {
+        setCountdown(timeLeft);
+      } else {
+        if (countdownRef.current) {
+          clearInterval(countdownRef.current);
+        }
+        countdownRef.current = null;
+        setCountdown(null);
+        setIsCountingDown(false);
+        doCapture();
+      }
+    }, 1000);
+  }, [hasStudioBindings, cameraPermission, isCountingDown, doCapture]);
+
+  const handleRetakeSlot = useCallback(() => {
+    if (!hasStudioBindings || !setCapturedPhoto) return;
+    setCapturedPhoto(selectedSlot, null);
+  }, [hasStudioBindings, setCapturedPhoto, selectedSlot]);
+
+  const handleSlotClick = useCallback(
+    (index: number) => {
+      if (!hasStudioBindings) return;
+      setSelectedSlot(index);
+    },
+    [hasStudioBindings],
+  );
+
+  const handleSelectFilter = useCallback(
+    (filterId: number | null) => {
+      if (!hasStudioBindings || !setActiveFilter) return;
+      setActiveFilter(filterId);
+    },
+    [hasStudioBindings, setActiveFilter],
+  );
 
   const handleQRCode = useCallback(async () => {
     await runWithLoading("Membuat QR Code...", async () => {
@@ -255,10 +498,25 @@ export function usePhotoboothActions({
     showFrame,
     showFilter,
 
+    // Studio states
+    cameraPermission,
+    selectedSlot,
+    flashSlot,
+    isFilterOpen,
+    countdown,
+    isCountingDown,
+    currentCssFilter,
+    photosTaken,
+
+    // Studio refs
+    webcamRef,
+    canvasRef,
+
     // State setters (for UI callbacks like onClose)
     setShowSuccess,
     setShowFilter,
     setShowFrame,
+    setIsFilterOpen,
 
     // Handlers
     handleSelectFrame,
@@ -269,5 +527,17 @@ export function usePhotoboothActions({
     handleQRCode,
     handleEmail,
     handlePrint,
+
+    // Studio handlers
+    handleAllowCamera,
+    handleDenyCamera,
+    handleRetryCamera,
+    handleCapture,
+    handleRetakeSlot,
+    handleSlotClick,
+    handleSelectFilter,
+
+    // Studio constants
+    maxPhotos,
   };
 }

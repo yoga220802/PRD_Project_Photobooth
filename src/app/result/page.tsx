@@ -108,7 +108,7 @@ const ResultPage = () => {
             handleFrame={handleFrame}
           />
 
-          {/* Arrow Icon */}
+          {/* Separator - Arrow Icon */}
           <div className="flex items-center justify-center">
             <ArrowBigRight size={64} className="text-gray-700" />
           </div>
