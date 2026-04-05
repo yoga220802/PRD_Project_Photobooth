@@ -14,19 +14,26 @@ interface PhotoboothContextType {
 
 const PhotoboothContext = createContext<PhotoboothContextType | null>(null);
 
-export function PhotoboothProvider({ children }: { children: React.ReactNode }) {
+export function PhotoboothProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [capturedPhotos, setCapturedPhotos] = useState<(string | null)[]>(
-    Array(MAX_PHOTOS).fill(null)
+    Array(MAX_PHOTOS).fill(null),
   );
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
 
-  const setCapturedPhoto = useCallback((index: number, photo: string | null) => {
-    setCapturedPhotos((prev) => {
-      const updated = [...prev];
-      updated[index] = photo;
-      return updated;
-    });
-  }, []);
+  const setCapturedPhoto = useCallback(
+    (index: number, photo: string | null) => {
+      setCapturedPhotos((prev) => {
+        const updated = [...prev];
+        updated[index] = photo;
+        return updated;
+      });
+    },
+    [],
+  );
 
   const resetPhotos = useCallback(() => {
     setCapturedPhotos(Array(MAX_PHOTOS).fill(null));
