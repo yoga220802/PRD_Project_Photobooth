@@ -3,12 +3,6 @@ import Image from "next/image";
 import { Camera, Sparkles } from "lucide-react";
 
 export default function Home() {
-	const frameTemplates = [
-		{ name: "WILD", color: "bg-yellow-300" },
-		{ name: "DISCO", color: "bg-[#FF90E8]" },
-		{ name: "WILD", color: "bg-yellow-300" },
-		{ name: "WILD", color: "bg-yellow-300" },
-	];
 
 	return (
 		<div className='min-h-screen flex flex-col bg-cyan-300 overflow-hidden relative'>
