@@ -38,8 +38,17 @@ export default function DashboardPage() {
     )
 
     const handleFrameClick = useCallback((frame: typeof frames[0]) => {
+        if (frame.locked) {
+            if (userCoins < frame.price) {
+                showToast("Koin tidak cukup", "error")
+                return
+            }
+            setUserCoins((prev) => prev - frame.price)
+            setUnlockedFrames((prev) => [...prev, frame.id])
+            showToast("Frame berhasil dibuka!", "success")
+        }
         setSelectedFrame(frame.id)
-    }, [])
+    }, [userCoins, showToast])
 
     const handleLogout = useCallback(() => {
         router.push('/login')
