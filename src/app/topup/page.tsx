@@ -34,7 +34,7 @@ export default function TopUpPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
+  const [isVerifying] = useState(false);
   const [toast, setToast] = useState<ToastState>({ show: false, message: '' });
 
   const showToast = (message: string) => {
@@ -365,9 +365,11 @@ export default function TopUpPage() {
                       )}
                       {selectedPayment?.id === payment.id && (
                         <div className="absolute -top-3 -left-3 z-20">
-                          <img 
-                            src="/icon/icon3.png" 
-                            alt="Selected" 
+                          <Image
+                            src="/icon/icon3.png"
+                            alt="Selected"
+                            width={32}
+                            height={32}
                             className="w-8 h-8 object-contain"
                           />
                         </div>
