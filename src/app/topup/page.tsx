@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -86,17 +87,6 @@ export default function TopUpPage() {
     setShowPaymentModal(false);
     setSelectedPackage(null);
     setSelectedPayment(null);
-  };
-
-  const handleQRScanned = () => {
-    setShowPaymentModal(false);
-    setShowVerificationModal(true);
-    setIsVerifying(true);
-    
-    // Simulasi verifikasi pembayaran
-    setTimeout(() => {
-      setIsVerifying(false);
-    }, 3000);
   };
 
   const totalPrice = selectedPackage ? selectedPackage.price + (selectedPayment?.price || 0) : 0;
@@ -252,9 +242,11 @@ export default function TopUpPage() {
               <>
                 <div className="bg-[#C8F5D8] pt-16 pb-8 px-8 flex flex-col items-center">
                   <div className="mb-6 flex items-center justify-center">
-                    <img 
-                      src="/icon/icon1.png" 
-                      alt="Success Icon" 
+                    <Image
+                      src="/icon/icon1.png"
+                      alt="Success Icon"
+                      width={120}
+                      height={120}
                       className="w-[120px] h-[120px] object-contain"
                     />
                   </div>
@@ -328,9 +320,11 @@ export default function TopUpPage() {
                       >
                         {selectedPackage?.id === pkg.id && (
                           <div className="absolute bottom-3 right-3">
-                            <img 
-                              src="/icon/icon2.png" 
-                              alt="Selected" 
+                            <Image
+                              src="/icon/icon2.png"
+                              alt="Selected"
+                              width={28}
+                              height={28}
                               className="w-7 h-7 object-contain"
                             />
                           </div>
@@ -381,7 +375,13 @@ export default function TopUpPage() {
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 flex items-center justify-center">
-                            <img src={payment.logo} alt={payment.name} className="w-full h-full object-contain" />
+                            <Image
+                              src={payment.logo}
+                              alt={payment.name}
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-contain"
+                            />
                           </div>
                           <span className="font-bold text-[#848484]">{payment.name}</span>
                         </div>
@@ -407,9 +407,11 @@ export default function TopUpPage() {
                     >
                       {selectedPayment?.id === payment.id && (
                         <div className="absolute -top-3 -left-3 z-20">
-                          <img 
-                            src="/icon/icon3.png" 
-                            alt="Selected" 
+                          <Image
+                            src="/icon/icon3.png"
+                            alt="Selected"
+                            width={32}
+                            height={32}
                             className="w-8 h-8 object-contain"
                           />
                         </div>
@@ -417,7 +419,13 @@ export default function TopUpPage() {
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
                           <div className="w-12 h-12 flex items-center justify-center">
-                            <img src={payment.logo} alt={payment.name} className="w-full h-full object-contain" />
+                            <Image
+                              src={payment.logo}
+                              alt={payment.name}
+                              width={48}
+                              height={48}
+                              className="w-full h-full object-contain"
+                            />
                           </div>
                           <span className="font-bold text-[#848484]">{payment.name}</span>
                         </div>
@@ -436,7 +444,7 @@ export default function TopUpPage() {
             <div className="lg:col-span-1">
               <div className="bg-[#FFD166] border-4 border-black rounded-2xl p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] sticky top-4">
                 <div className="flex items-center gap-2 mb-4">
-                  <img src="/gambar/icon.png" alt="Icon" className="w-6 h-6" />
+                  <Image src="/gambar/icon.png" alt="Icon" width={24} height={24} className="w-6 h-6" />
                   <h2 className="text-xl font-extrabold uppercase">RINCIAN BAYAR</h2>
                 </div>
 
