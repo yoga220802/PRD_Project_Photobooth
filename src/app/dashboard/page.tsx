@@ -1,6 +1,6 @@
 "use client";
 
-import { User, Zap, Lock, LogOut, Camera } from 'lucide-react'
+import { User, Lock, LogOut } from 'lucide-react'
 import Image from 'next/image'
 import { useState, useMemo, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
