@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
         const transaction = await snap.createTransaction(parameter);
         return NextResponse.json({ token: transaction.token });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Payment failed' }, { status: 500 });
     }
 }
