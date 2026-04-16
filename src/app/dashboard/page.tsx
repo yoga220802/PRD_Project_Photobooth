@@ -11,8 +11,6 @@ export default function DashboardPage() {
     const [selectedFrame, setSelectedFrame] = useState(1)
     const [userCoins, setUserCoins] = useState(45)
     const [unlockedFrames, setUnlockedFrames] = useState<number[]>([1])
-    const [showLogoutModal, setShowLogoutModal] = useState(false)
-    const [showBuyModal, setShowBuyModal] = useState(false)
     const [showHistory, setShowHistory] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState("Semua")
     const [isLoadingTopUp, setIsLoadingTopUp] = useState(false)
@@ -43,39 +41,7 @@ export default function DashboardPage() {
         setSelectedFrame(frame.id)
     }, [])
 
-    const handleUseFrame = useCallback(() => {
-        const frame = framesData.find(f => f.id === selectedFrame)
-        if (!frame) return
-
-        const isLocked = !unlockedFrames.includes(frame.id)
-
-        if (isLocked) {
-            setShowBuyModal(true)
-        } else {
-            showToast(`Yeay! Menggunakan frame ${frame.name}!`, 'success')
-        }
-    }, [framesData, selectedFrame, unlockedFrames, showToast])
-
-    const confirmBuy = useCallback(() => {
-        const frame = framesData.find(f => f.id === selectedFrame)
-        if (!frame) return
-
-        if (userCoins >= frame.price) {
-            setUserCoins(prev => prev - frame.price)
-            setUnlockedFrames(prev => [...prev, frame.id])
-            showToast(`Frame ${frame.name} berhasil dibeli!`, 'success')
-            setShowBuyModal(false)
-        } else {
-            showToast(`Ups! Koin kamu kurang untuk beli frame ${frame.name}.`, 'error')
-            setShowBuyModal(false)
-        }
-    }, [framesData, selectedFrame, userCoins, unlockedFrames, showToast])
-
     const handleLogout = useCallback(() => {
-        setShowLogoutModal(true)
-    }, [])
-
-    const confirmLogout = useCallback(() => {
         router.push('/login')
     }, [router])
 
@@ -86,15 +52,7 @@ export default function DashboardPage() {
         }, 3000)
     }, [router])
 
-    const currentFrame = useMemo(() => 
-        framesData.find(f => f.id === selectedFrame) || framesData[0],
-        [framesData, selectedFrame]
-    )
     
-    const isCurrentFrameLocked = useMemo(() => 
-        !unlockedFrames.includes(selectedFrame),
-        [unlockedFrames, selectedFrame]
-    )
 
     return (
         <div className="min-h-screen bg-[#4DD0E1] p-4 md:p-8">
