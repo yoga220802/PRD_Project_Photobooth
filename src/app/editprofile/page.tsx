@@ -1,12 +1,11 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, Pencil, Coins, Sparkles, Star, Camera, Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useToast } from '@/components/Toast';
 
-// --- Komponen Custom: Input berbentuk Tab Folder ---
 interface NeoFolderInputProps {
     label: string;
     value: string;
@@ -60,6 +59,15 @@ export default function App() {
         birthdate: '02-05-2005'
     });
 
+    useEffect(() => {
+        const saved = localStorage.getItem('profileData');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            setFormData(parsed.formData ?? formData);
+            setProfileImage(parsed.profileImage ?? null);
+        }
+    }, []);
+
     const confirmLogout = () => {
         router.push('/login');
     };
@@ -76,10 +84,10 @@ export default function App() {
     };
 
     const handleSaveProfile = () => {
+        localStorage.setItem('profileData', JSON.stringify({ formData, profileImage }));
         showToast('Profil berhasil disimpan!', 'success');
         console.log('Saving profile:', formData);
     };
-
     return (
         <div className="min-h-screen bg-[#F4A261] font-sans flex items-center justify-center p-4 sm:p-8 relative overflow-hidden"
             style={{

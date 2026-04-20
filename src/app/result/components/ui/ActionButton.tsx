@@ -15,41 +15,45 @@ function ActionButton({
   PrintProp,
 }: ActionButtonProps) {
   return (
-    <div className="space-y-12">
-      {/* Download Button */}
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8">
       <button
         onClick={DownloadProp}
-        className="btn-neo w-full flex justify-center items-center gap-4"
+        className="btn-neo w-full flex justify-center items-center gap-2 sm:gap-3 lg:gap-4 py-2 sm:py-3"
       >
-        <span className="text-black font-black text-xl">UNDUH</span>
-        <Download size={32} />
+        <span className="text-black font-black text-sm sm:text-base lg:text-xl">UNDUH</span>
+        <Download size={20} className="sm:hidden" />
+        <Download size={24} className="hidden sm:block lg:hidden" />
+        <Download size={32} className="hidden lg:block" />
       </button>
 
-      {/* QR Code Button */}
       <button
         onClick={QRCodeProp}
-        className="btn-neo w-full flex justify-center items-center gap-4"
+        className="btn-neo w-full flex justify-center items-center gap-2 sm:gap-3 lg:gap-4 py-2 sm:py-3"
       >
-        <span className="text-black font-black text-xl">QR CODE</span>
-        <QrCode size={32} />
+        <span className="text-black font-black text-sm sm:text-base lg:text-xl">QR CODE</span>
+        <QrCode size={20} className="sm:hidden" />
+        <QrCode size={24} className="hidden sm:block lg:hidden" />
+        <QrCode size={32} className="hidden lg:block" />
       </button>
 
-      {/* Email Button */}
       <button
         onClick={EmailProp}
-        className="btn-neo w-full flex justify-center items-center gap-4"
+        className="btn-neo w-full flex justify-center items-center gap-2 sm:gap-3 lg:gap-4 py-2 sm:py-3"
       >
-        <span className="text-black font-black text-xl">Email</span>
-        <Mail size={32} />
+        <span className="text-black font-black text-sm sm:text-base lg:text-xl">Email</span>
+        <Mail size={20} className="sm:hidden" />
+        <Mail size={24} className="hidden sm:block lg:hidden" />
+        <Mail size={32} className="hidden lg:block" />
       </button>
 
-      {/* Print Button */}
       <button
         onClick={PrintProp}
-        className="btn-neo w-full flex justify-center items-center gap-4"
+        className="btn-neo w-full flex justify-center items-center gap-2 sm:gap-3 lg:gap-4 py-2 sm:py-3"
       >
-        <span className="text-black font-black text-xl">Cetak</span>
-        <Printer size={32} />
+        <span className="text-black font-black text-sm sm:text-base lg:text-xl">Cetak</span>
+        <Printer size={20} className="sm:hidden" />
+        <Printer size={24} className="hidden sm:block lg:hidden" />
+        <Printer size={32} className="hidden lg:block" />
       </button>
     </div>
   );

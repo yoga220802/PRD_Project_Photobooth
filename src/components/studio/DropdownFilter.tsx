@@ -2,11 +2,10 @@
 
 import Image from "next/image";
 
-// CSS filter string mapping for each filter
 export const FILTER_CSS_MAP: Record<number, string> = {
-  1: "grayscale(100%)",      // Black & White
-  2: "saturate(1.8) contrast(1.2)", // Vivid
-  3: "sepia(100%)",          // Sepia
+  1: "grayscale(100%)",
+  2: "saturate(1.8) contrast(1.2)",
+  3: "sepia(100%)",
 };
 
 export const filterOptions = [
@@ -46,32 +45,32 @@ export default function DropdownFilter({
         w-full mt-3
         bg-[#FFC746] border-4 border-black rounded-2xl
         shadow-[6px_6px_0px_0px_#000]
-        p-5 xl:p-6
+        p-3 lg:p-5 xl:p-6
         animate-[slideDown_0.25s_ease-out]
       "
     >
-      <div className="flex items-start justify-center gap-4 xl:gap-6">
-        {/* No Filter option */}
+      <div className="flex items-start justify-center gap-2 lg:gap-4 xl:gap-6 flex-wrap">
         <button
           onClick={() => onSelectFilter(null)}
           className={`
-            flex flex-col items-center gap-2 xl:gap-3
+            flex flex-col items-center gap-2 lg:gap-3
             cursor-pointer group
             transition-transform duration-200
             hover:scale-105 active:scale-95
+            flex-shrink-0
           `}
         >
           <span
             className={`
-              text-sm xl:text-base font-bold text-black
-              ${activeFilter === null ? "underline underline-offset-4 decoration-2" : ""}
+              text-xs lg:text-sm xl:text-base font-bold text-black text-center
+              ${activeFilter === null ? "underline underline-offset-2 lg:underline-offset-4 decoration-2" : ""}
             `}
           >
             No Filter
           </span>
           <div
             className={`
-              w-[80px] h-[80px] xl:w-[120px] xl:h-[120px]
+              w-[60px] h-[60px] lg:w-[80px] lg:h-[80px] xl:w-[120px] xl:h-[120px]
               rounded-xl border-4 transition-all duration-200
               flex items-center justify-center bg-white
               ${
@@ -81,7 +80,7 @@ export default function DropdownFilter({
               }
             `}
           >
-            <span className="text-2xl">🚫</span>
+            <span className="text-lg lg:text-2xl">🚫</span>
           </div>
         </button>
 
@@ -90,23 +89,22 @@ export default function DropdownFilter({
             key={filter.id}
             onClick={() => onSelectFilter(filter.id)}
             className={`
-              flex flex-col items-center gap-2 xl:gap-3
+              flex flex-col items-center gap-2 lg:gap-3
               cursor-pointer group
               transition-transform duration-200
               hover:scale-105 active:scale-95
+              flex-shrink-0
             `}
           >
-            {/* Filter Name */}
             <span
               className={`
-                text-sm xl:text-base font-bold text-black
-                ${activeFilter === filter.id ? "underline underline-offset-4 decoration-2" : ""}
+                text-xs lg:text-sm xl:text-base font-bold text-black text-center
+                ${activeFilter === filter.id ? "underline underline-offset-2 lg:underline-offset-4 decoration-2" : ""}
               `}
             >
               {filter.name}
             </span>
 
-            {/* Filter Thumbnail */}
             <div
               className={`
                 relative overflow-hidden rounded-xl
@@ -123,7 +121,7 @@ export default function DropdownFilter({
                 alt={filter.name}
                 width={120}
                 height={120}
-                className="w-[80px] h-[80px] xl:w-[120px] xl:h-[120px] object-cover"
+                className="w-[60px] h-[60px] lg:w-[80px] lg:h-[80px] xl:w-[120px] xl:h-[120px] object-cover"
               />
             </div>
           </button>
