@@ -6,15 +6,16 @@ import DropdownFilter, {
 } from "@/components/studio/DropdownFilter";
 import { usePhotobooth } from "@/context/PhotoboothContext";
 import { usePhotoboothActions } from "@/hooks/usePhotoboothActions";
-import { ArrowLeft, LucideArrowBigDown, Camera, RotateCcw } from "lucide-react";
-
+import { LucideArrowBigDown, Camera, RotateCcw, ChevronLeft } from "lucide-react";
 import Webcam from "react-webcam";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const CAPTURE_LABELS = ["Cekrek 1", "Cekrek 2", "Cekrek 3"] as const;
 const MAX_PHOTOS = 3;
 
 const Studio = () => {
+  const router = useRouter();
   const { capturedPhotos, activeFilter, setCapturedPhoto, setActiveFilter } =
     usePhotobooth();
 
@@ -59,28 +60,25 @@ const Studio = () => {
         onRetry={handleRetryCamera}
       />
 
-      {/* Hidden canvas for image processing */}
-      <canvas ref={canvasRef} className="hidden" />
+      <canvas ref={canvasRef} className="hidden" />      <div className="bg-[#D67FCE] min-h-screen pt-12 pb-6 px-3 sm:px-4 md:px-6 lg:px-8 relative">
 
-      <div className="bg-[#D67FCE] min-h-screen ">
-        <header className="flex items-center gap-4 p-4">
-          <button>
-            <ArrowLeft />
-          </button>
-        </header>
-        <div className="grid grid-cols-2 justify-center mx-8 gap-2 p-4">
-          {/* Photoshot Area */}
+        <button
+          onClick={() => router.push('/dashboard')}
+          className="absolute top-4 left-4 bg-white border-4 border-black rounded-2xl p-2 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] hover:bg-black hover:text-white hover:translate-y-1 hover:drop-shadow-none transition-all active:scale-95 z-20"
+        >
+          <ChevronLeft size={24} strokeWidth={3} />
+        </button>
+        <div className="grid grid-cols-1 lg:grid-cols-2 justify-center mx-4 lg:mx-8 gap-4 lg:gap-2 p-4">
           <div className="flex flex-col gap-6 place-items-center">
-            <div className="text-center max-w-2xl card-neo rounded-[17px] bg-[#FF519C]">
-              <span className="text-2xl font-bold">
+            <div className="text-center max-w-full lg:max-w-2xl card-neo rounded-[17px] bg-[#FF519C]">
+              <span className="text-xl lg:text-2xl font-bold">
                 {photosTaken >= maxPhotos
                   ? "Semua foto sudah diambil!"
                   : "Give your best smile!"}
               </span>
             </div>
-            <div className="bg-white max-w-md w-full rounded-2xl card-neo flex flex-col gap-6">
-              {/* Main Camera / Timer Area */}
-              <div className="bg-[#cfd2d1] max-w-full aspect-[4/3] rounded-2xl border-4 card-neo flex items-center justify-center p-4 overflow-hidden relative">
+            <div className="bg-white max-w-full lg:max-w-md w-full rounded-2xl card-neo flex flex-col gap-6">
+              <div className="bg-[#cfd2d1] max-w-full aspect-[4/3] lg:aspect-[16/9] rounded-2xl border-4 card-neo flex items-center justify-center p-2 lg:p-4 overflow-hidden relative">
                 {cameraPermission === "granted" ? (
                   <Webcam
                     mirrored={true}
@@ -95,8 +93,8 @@ const Studio = () => {
                   />
                 ) : (
                   <div className="flex flex-col items-center justify-center text-center gap-2">
-                    <span className="text-4xl">📷</span>
-                    <span className="text-sm text-gray-500 font-medium">
+                    <span className="text-3xl lg:text-4xl">📷</span>
+                    <span className="text-xs lg:text-sm text-gray-500 font-medium">
                       {cameraPermission === "checking"
                         ? "Memeriksa akses kamera..."
                         : "Menunggu izin kamera"}
@@ -104,12 +102,11 @@ const Studio = () => {
                   </div>
                 )}
 
-                {/* Countdown overlay */}
                 {countdown !== null && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10">
                     <span
                       key={countdown}
-                      className="text-[120px] font-black text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] animate-[countdownPulse_1s_ease-out]"
+                      className="text-6xl lg:text-[120px] font-black text-white drop-shadow-[0_4px_8px_rgba(0,0,0,0.5)] animate-[countdownPulse_1s_ease-out]"
                     >
                       {countdown}
                     </span>
@@ -117,8 +114,7 @@ const Studio = () => {
                 )}
               </div>
 
-              {/* Photo Slots — clickable for retake */}
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex items-center justify-center gap-2 lg:gap-4">
                 {capturedPhotos.map((photo, index) => (
                   <button
                     key={index}
@@ -129,7 +125,7 @@ const Studio = () => {
                         : `Slot ${index + 1}`
                     }
                     className={`
-                      w-[120px] h-[120px] rounded-xl overflow-hidden
+                      w-[80px] h-[80px] lg:w-[120px] lg:h-[120px] rounded-xl overflow-hidden
                       transition-all duration-300 ease-out relative
                       cursor-pointer
                       ${photo ? "border-2 border-green-400 shadow-lg shadow-green-200" : "bg-[#678bbd] card-neo"}
@@ -144,15 +140,13 @@ const Studio = () => {
                           alt={`Foto ${index + 1}`}
                           className="w-full h-full object-cover animate-[fadeScaleIn_0.4s_ease-out]"
                         />
-                        {/* Retake overlay on selected filled slot */}
                         {selectedSlot === index && (
                           <div className="absolute inset-0 bg-black/40 flex items-center justify-center"></div>
                         )}
-                        {/* Check badge */}
                       </>
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-white/60 text-xs font-bold">
+                        <span className="text-white/60 text-xs lg:text-sm font-bold">
                           {index + 1}
                         </span>
                       </div>
@@ -161,22 +155,25 @@ const Studio = () => {
                 ))}
               </div>
 
-              {/* Action Buttons */}
               <div className="flex flex-col items-center mt-4 gap-3">
                 {photosTaken >= maxPhotos ? (
                   <>
                     <button
                       onClick={handleRetakeSlot}
-                      className="font-bold text-lg px-4 py-2 btn-neo bg-[#FF519C] text-black flex items-center gap-2"
+                      className="font-bold text-base lg:text-lg px-6 py-3 lg:px-4 lg:py-2 btn-neo bg-[#FF519C] text-black flex items-center gap-2 min-h-[44px]"
                     >
                       <RotateCcw size={18} />
-                      Retake Foto {selectedSlot + 1}
+                      <span className="text-sm lg:text-base">
+                        Retake Foto {selectedSlot + 1}
+                      </span>
                     </button>
                     <Link
                       href="/result"
-                      className="font-bold text-lg px-8 py-2 btn-neo bg-[#2fd336] text-black flex items-center gap-2"
+                      className="font-bold text-base lg:text-lg px-8 py-3 lg:px-8 lg:py-2 btn-neo bg-[#2fd336] text-black flex items-center gap-2 min-h-[44px]"
                     >
-                      Lihat Hasil
+                      <span className="text-sm lg:text-base">
+                        Lihat Hasil
+                      </span>
                     </Link>
                   </>
                 ) : (
@@ -184,8 +181,8 @@ const Studio = () => {
                     onClick={handleCapture}
                     disabled={cameraPermission !== "granted" || isCountingDown}
                     className={`
-                      font-bold text-lg px-8 py-2 btn-neo
-                      flex items-center gap-2
+                      font-bold text-base lg:text-lg px-8 py-3 lg:px-8 lg:py-2 btn-neo
+                      flex items-center gap-2 min-h-[44px]
                       transition-all duration-200
                       ${
                         isCountingDown
@@ -195,27 +192,30 @@ const Studio = () => {
                     `}
                   >
                     <Camera size={18} />
-                    {isCountingDown
-                      ? "Bersiap..."
-                      : capturedPhotos[selectedSlot] !== null
-                        ? `Retake ${selectedSlot + 1}`
-                        : CAPTURE_LABELS[selectedSlot]}
+                    <span className="text-sm lg:text-base">
+                      {isCountingDown
+                        ? "Bersiap..."
+                        : capturedPhotos[selectedSlot] !== null
+                          ? `Retake ${selectedSlot + 1}`
+                          : CAPTURE_LABELS[selectedSlot]}
+                    </span>
                   </button>
                 )}
               </div>
             </div>
           </div>
-          {/* Filter */}
-          <div className="items-center gap-6">
+          <div className="flex flex-col items-center gap-6">
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="btn-neo w-full rounded-[17px] font-bold text-lg flex items-center justify-center gap-2"
+              className="btn-neo w-full rounded-[17px] font-bold text-base lg:text-lg flex items-center justify-center gap-2 px-4 py-3"
             >
-              Filter yang bikin foto kamu makin seru!{" "}
+              <span className="text-center">
+                Filter yang bikin foto kamu makin seru!
+              </span>
               <span
-                className={`transition-transform duration-300 ${isFilterOpen ? "rotate-180" : ""}`}
+                className={`transition-transform duration-300 flex-shrink-0 ${isFilterOpen ? "rotate-180" : ""}`}
               >
-                <LucideArrowBigDown />
+                <LucideArrowBigDown size={20} />
               </span>
             </button>
 

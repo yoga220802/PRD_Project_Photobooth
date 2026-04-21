@@ -9,15 +9,13 @@ interface FilterButtonProps {
 function FilterButton({ handleFilter, handleFrame }: FilterButtonProps) {
   return (
     <>
-      {/* Filter Options */}
       <div className="flex flex-col gap-4">
-        {/* Tambah Filter */}
         <button
           onClick={handleFilter}
           className="btn-neo relative bg-[#ffffff] border-4 border-black rounded-2xl px-12 py-4"
         >
           <Image
-            src="/icon/star.png"
+            src="/icons/star.png"
             alt="Bintang"
             width={52}
             height={52}
@@ -26,13 +24,12 @@ function FilterButton({ handleFilter, handleFrame }: FilterButtonProps) {
           <span className="text-black font-black text-xl">Tambah filter!</span>
         </button>
 
-        {/* Ganti Frame */}
         <button
           onClick={handleFrame}
           className="btn-neo relative bg-[#A9D965] border-4 border-black rounded-2xl px-12 py-4"
         >
           <Image
-            src="/icon/star.png"
+            src="/icons/star.png"
             alt="Bintang"
             width={60}
             height={60}
