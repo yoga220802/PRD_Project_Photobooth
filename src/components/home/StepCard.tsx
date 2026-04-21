@@ -16,7 +16,6 @@ export default function StepCard({
   iconSrc,
   iconAlt,
   stepNumber,
-  stepTitle,
   stepDesc,
 }: StepCardProps) {
   return (
