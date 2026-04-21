@@ -1,296 +1,144 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Camera, Sparkles } from "lucide-react";
+import StepCard from "@/components/home/StepCard";
+import Navbar from "@/components/navbar/Navbar";
 
 export default function Home() {
-
 	return (
 		<div className='min-h-screen flex flex-col bg-cyan-300 overflow-hidden relative'>
-			{/* Dekorasi Background ala Neobrutalism */}
-			<div className='absolute top-10 left-10 w-24 h-24 bg-yellow-400 border-4 border-black rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] animate-bounce' />
-			<div className='absolute bottom-20 right-10 w-32 h-32 bg-[#FF90E8] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rotate-12' />
-			<Sparkles
-				size={48}
-				className='absolute top-20 right-32 text-black rotate-12'
-			/>
+			<Navbar />
+			<div className='absolute top-4 sm:top-6 md:top-10 left-4 sm:left-6 md:left-10 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-yellow-400 border-4 border-black rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] animate-bounce' />
+			<div className='absolute bottom-12 sm:bottom-16 md:bottom-20 right-4 sm:right-6 md:right-10 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-[#FF90E8] border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rotate-12' />
+			<Sparkles size={32} className='absolute top-12 sm:top-16 md:top-20 right-20 sm:right-24 md:right-32 text-black rotate-12' />
 
-			{/* HERO SECTION */}
-			<div className='flex items-center justify-center min-h-screen px-6'>
+			<div className='flex items-center justify-center min-h-screen pt-16 px-4 sm:px-6'>
 				<div className='card-neo max-w-3xl w-full flex flex-col items-center text-center space-y-8 bg-white z-10'>
-					{/* Logo Icon */}
-					<div className='w-32 h-32 bg-[#FF90E8] border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-full flex items-center justify-center rotate-[-5deg] mb-4'>
-						<Camera size={64} className='text-black' />
+					<div className='w-20 h-20 sm:w-24 sm:h-28 md:w-32 md:h-32 bg-[#FF90E8] border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-full flex items-center justify-center rotate-[-5deg] mb-4'>
+						<Camera size={40} className="text-black" />
 					</div>
-
 					<div className='space-y-4'>
-						<h1 className='text-5xl md:text-7xl font-black uppercase tracking-tight bg-yellow-300 inline-block px-4 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-2'>
+						<h1 className='text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black uppercase tracking-tight bg-yellow-300 inline-block px-2 sm:px-4 border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform -rotate-2'>
 							SNAP! BOOTH
 						</h1>
-						<p className='text-xl md:text-2xl font-bold border-b-4 border-black pb-2 mt-6'>
+						<p className='text-lg sm:text-xl md:text-2xl font-bold border-b-4 border-black pb-2 mt-6'>
 							Photobooth Web-App Modern & Praktis.
 						</p>
-						<p className='text-gray-700 font-medium'>
-							Abadikan momen, pilih frame premium, dan cetak langsung atau kirim ke
-							emailmu!
+						<p className='text-sm sm:text-base text-gray-700 font-medium px-2'>
+							Abadikan momen, pilih frame premium, dan cetak langsung atau kirim ke emailmu!
 						</p>
 					</div>
-
-					{/* Tombol CTA */}
 					<Link
 						href='/login'
-						className='btn-neo bg-green-400 text-2xl px-12 py-4 mt-8 flex items-center gap-3 group'>
+						className='btn-neo bg-green-400 text-lg sm:text-xl md:text-2xl px-8 sm:px-10 md:px-12 py-3 sm:py-4 mt-6 sm:mt-8 flex items-center gap-2 sm:gap-3 group'>
 						MULAI FOTO SEKARANG
-						<span className='group-hover:translate-x-2 transition-transform'>➔</span>
+						<span className='group-hover:translate-x-2 transition-transform text-sm sm:text-base'>➔</span>
 					</Link>
 				</div>
 			</div>
 
-			{/* 4 LANGKAH MUDAH SECTION */}
-			<div className='px-6 py-16'>
-				<div className='max-w-5xl mx-auto space-y-12 my-12'>
-					{/* Title Section */}
-					<div className='relative'>
-						{/* Left Icon - Disk/Divider */}
-						<div className='absolute -left-8 -top-8 w-20 h-20 rounded-full flex items-center justify-center z-10'>
-							<Image
-								src='/assets/icons/cassette.png'
-								alt='cassette icon'
-								width={64}
-								height={64}
-								className='object-contain'
-							/>
+			<div className='px-4 sm:px-8 md:px-12 py-10 sm:py-14'>
+				<div className='max-w-4xl mx-auto space-y-6 sm:space-y-8'>
+					<div className='relative mx-6 sm:mx-8'>
+						<div className='absolute -left-6 sm:-left-8 -top-6 sm:-top-8 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center z-10'>
+							<Image src='/assets/icons/cassette.png' alt='cassette icon' width={64} height={64} className='object-contain w-full h-full' />
 						</div>
-
-						{/* Right Icon - Cassette */}
-						<div className='absolute -right-8 -bottom-8 w-20 h-20 rounded-full flex items-center justify-center z-10'>
-							<Image
-								src='/assets/icons/header-divider.png'
-								alt='header divider icon'
-								width={64}
-								height={64}
-								className='object-contain'
-							/>
+						<div className='absolute -right-6 sm:-right-8 -bottom-6 sm:-bottom-8 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center z-10'>
+							<Image src='/assets/icons/header-divider.png' alt='header divider icon' width={64} height={64} className='object-contain w-full h-full' />
 						</div>
-
-						<div className='bg-lime-400 border-4 border-black rounded-3xl px-8 py-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]'>
-							<h2 className='text-3xl md:text-4xl font-black uppercase tracking-wide text-center'>
+						<div className='bg-lime-400 border-4 border-black rounded-3xl px-4 sm:px-6 py-5 sm:py-7 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]'>
+							<h2 className='text-base sm:text-xl md:text-2xl lg:text-3xl font-black uppercase tracking-wide text-center'>
 								FOTO DENGAN 4 LANGKAH MUDAH
 							</h2>
 						</div>
 					</div>
 
-					{/* 4 Options Buttons */}
-					<div className='grid grid-cols-2 md:grid-cols-4 gap-4 mt-8'>
-						<button className='btn-neo bg-yellow-300 text-2xl font-extrabold py-4 hover:scale-105 transition-transform'>
-							Top Up!
-						</button>
-						<button className='btn-neo bg-[#FF90E8] text-2xl font-extrabold py-4 hover:scale-105 transition-transform'>
-							Pilih frame
-						</button>
-						<button className='btn-neo bg-blue-300 text-2xl font-extrabold py-4 hover:scale-105 transition-transform'>
-							Cekrek!
-						</button>
-						<button className='btn-neo bg-green-400 text-2xl font-extrabold py-4 hover:scale-105 transition-transform'>
-							Cetak!
-						</button>
+					<div className='grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3'>
+						<span className='btn-neo bg-yellow-300 text-xs sm:text-sm md:text-base font-extrabold py-2 sm:py-3 text-center'>Top Up!</span>
+						<span className='btn-neo bg-[#FF90E8] text-xs sm:text-sm md:text-base font-extrabold py-2 sm:py-3 text-center'>Pilih frame</span>
+						<span className='btn-neo bg-blue-300 text-xs sm:text-sm md:text-base font-extrabold py-2 sm:py-3 text-center'>Cekrek!</span>
+						<span className='btn-neo bg-green-400 text-xs sm:text-sm md:text-base font-extrabold py-2 sm:py-3 text-center'>Cetak!</span>
 					</div>
 
-					{/* Process Flow */}
-					<div className='mt-12'>
-						<div className='flex flex-wrap items-center justify-between gap-1 md:gap-4'>
-							{/* Step 1 - Payment */}
-							<div className='flex-1 max-w-[150px]'>
-								<div className='bg-yellow-300 border-4 border-black rounded-3xl p-6 shadow-[7px_11px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square hover:scale-105 transition-transform'>
-									<Image
-										src='/assets/icons/top-up.png'
-										alt='Top Up'
-										width={80}
-										height={80}
-										className='object-contain'
-									/>
-								</div>
-							</div>
-
-							{/* Arrow */}
-							<div className='hidden md:flex items-center justify-center flex-shrink-0'>
-								<Image
-									src='/assets/icons/arrow.png'
-									alt='Next step'
-									width={48}
-									height={48}
-									className='object-contain'
-								/>
-							</div>
-
-							{/* Step 2 - Frames */}
-							<div className='flex-1 max-w-[150px]'>
-								<div className='bg-[#AB3DDE] border-4 border-black rounded-3xl p-6 shadow-[7px_11px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square hover:scale-105 transition-transform'>
-									<Image
-										src='/assets/icons/frame.png'
-										alt='Pilih Frame'
-										width={80}
-										height={80}
-										className='object-contain'
-									/>
-								</div>
-							</div>
-
-							{/* Arrow */}
-							<div className='hidden md:flex items-center justify-center flex-shrink-0'>
-								<Image
-									src='/assets/icons/arrow.png'
-									alt='Next step'
-									width={48}
-									height={48}
-									className='object-contain'
-								/>
-							</div>
-
-							{/* Step 3 - Camera */}
-							<div className='flex-1 max-w-[150px]'>
-								<div className='bg-[#72ACC7] border-4 border-black rounded-3xl p-6 shadow-[7px_11px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square hover:scale-105 transition-transform'>
-									<Image
-										src='/assets/icons/camera.png'
-										alt='Cekrek'
-										width={80}
-										height={80}
-										className='object-contain'
-									/>
-								</div>
-							</div>
-
-							{/* Arrow */}
-							<div className='hidden md:flex items-center justify-center flex-shrink-0'>
-								<Image
-									src='/assets/icons/arrow.png'
-									alt='Next step'
-									width={48}
-									height={48}
-									className='object-contain'
-								/>
-							</div>
-
-							{/* Step 4 - Print */}
-							<div className='flex-1 max-w-[150px]'>
-								<div className='bg-[#4ADE80] border-4 border-black rounded-3xl p-6 shadow-[7px_11px_0px_rgba(0,0,0,1)] flex items-center justify-center aspect-square hover:scale-105 transition-transform'>
-									<Image
-										src='/assets/icons/printer.png'
-										alt='Cetak'
-										width={80}
-										height={80}
-										className='object-contain'
-									/>
-								</div>
-							</div>
+					<div className='grid grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-center gap-1 sm:gap-2 md:gap-3'>
+						<StepCard
+							bgColor='bg-yellow-300'
+							iconSrc='/assets/icons/top-up.png'
+							iconAlt='Top Up'
+							stepNumber={1}
+							stepTitle='Top Up'
+							stepDesc='Isi saldo dulu sebelum mulai sesi foto'
+						/>
+						<div className='flex items-center justify-center'>
+							<Image src='/assets/icons/arrow.png' alt='Next step' width={32} height={32} className='object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8' />
 						</div>
+						<StepCard
+							bgColor='bg-[#AB3DDE]'
+							iconSrc='/assets/icons/frame.png'
+							iconAlt='Pilih Frame'
+							stepNumber={2}
+							stepTitle='Pilih Frame'
+							stepDesc='Pilih frame favoritmu sebelum foto'
+						/>
+						<div className='flex items-center justify-center'>
+							<Image src='/assets/icons/arrow.png' alt='Next step' width={32} height={32} className='object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8' />
+						</div>
+						<StepCard
+							bgColor='bg-[#72ACC7]'
+							iconSrc='/assets/icons/camera.png'
+							iconAlt='Cekrek'
+							stepNumber={3}
+							stepTitle='Cekrek!'
+							stepDesc='Ambil foto seru bareng teman-temanmu'
+						/>
+						<div className='flex items-center justify-center'>
+							<Image src='/assets/icons/arrow.png' alt='Next step' width={32} height={32} className='object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8' />
+						</div>
+						<StepCard
+							bgColor='bg-[#4ADE80]'
+							iconSrc='/assets/icons/printer.png'
+							iconAlt='Cetak'
+							stepNumber={4}
+							stepTitle='Cetak!'
+							stepDesc='Cetak atau kirim foto ke emailmu'
+						/>
 					</div>
 				</div>
 			</div>
 
-			{/* GALLERY SHOWCASE SECTION */}
-			<div className='px-6 pb-20'>
-				{/* Collection Section */}
+			<div className='px-4 sm:px-6 pb-16 sm:pb-20'>
 				<div
-					className='bg-green-400 border-4 border-black rounded-3xl px-8 py-12 mb-20 shadow-[7px_11px_0px_rgba(0,0,0,1)] text-center'
+					className='bg-green-400 border-4 border-black rounded-3xl px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 mb-8 sm:mb-12 md:mb-16 shadow-[7px_11px_0px_rgba(0,0,0,1)] text-center'
 					style={{ transform: "matrix(1, 0.01, -0.01, 1, 0, 0)" }}>
-					<h3 className='text-3xl md:text-4xl font-black uppercase tracking-wide'>
+					<h3 className='text-lg sm:text-xl md:text-2xl lg:text-3xl font-black uppercase tracking-wide'>
 						Lihat koleksi foto keren ini!
 					</h3>
 				</div>
 				<div className='max-w-7xl mx-auto'>
 					<div className='relative'>
-						{/* Rainbow decoration - Neo Boohoo */}
-						<div className='absolute -top-32 -right-16 md:-right-12 z-20 w-40 h-40 md:w-64 md:h-64'>
-							<Image
-								src='/assets/decorations/neo-booth.png'
-								alt='Neo Boohoo decoration'
-								width={280}
-								height={280}
-								className='object-contain w-full h-full'
-							/>
+						<div className='absolute -top-20 -right-6 sm:-top-24 sm:-right-8 md:-top-28 md:-right-10 z-20 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 lg:w-48 lg:h-48'>
+							<Image src='/assets/decorations/neo-booth.png' alt='Neo Boohoo decoration' width={280} height={280} className='object-contain w-full h-full' />
 						</div>
-
-						{/* Gallery Container */}
 						<div
-							className='bg-yellow-400 border-4 border-black rounded-3xl p-8 md:p-12 shadow-[7px_11px_0px_rgba(0,0,0,1)] relative overflow-hidden'
+							className='bg-yellow-400 border-4 border-black rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-[7px_11px_0px_rgba(0,0,0,1)] relative overflow-hidden'
 							style={{ transform: "matrix(1, 0.01, -0.01, 1, 0, 0)" }}>
-							{/* Decorative stars on the left */}
-							<div className='absolute left-6 top-1/2 transform -translate-y-1/2 space-y-6 hidden md:flex flex-col'>
-								<Image
-									src='/assets/icons/star.png'
-									alt='Star decoration'
-									width={60}
-									height={60}
-									className='object-contain'
-								/>
-								<Image
-									src='/assets/icons/star.png'
-									alt='Star decoration'
-									width={60}
-									height={60}
-									className='object-contain'
-								/>
-								<Image
-									src='/assets/icons/star.png'
-									alt='Star decoration'
-									width={60}
-									height={60}
-									className='object-contain'
-								/>
+							<div className='absolute left-2 sm:left-4 md:left-6 top-1/2 transform -translate-y-1/2 space-y-2 sm:space-y-4 md:space-y-6 hidden lg:flex flex-col'>
+								<Image src='/assets/icons/star.png' alt='Star decoration' width={24} height={24} className='object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8' />
+								<Image src='/assets/icons/star.png' alt='Star decoration' width={24} height={24} className='object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8' />
+								<Image src='/assets/icons/star.png' alt='Star decoration' width={24} height={24} className='object-contain w-4 h-4 sm:w-6 sm:h-6 md:w-8 md:h-8' />
 							</div>
-
-							{/* Frame Templates Grid with rotations */}
-							<div className='flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16 px-4'>
-								{/* Frame 1 - WILD (rotate -9.36deg) */}
-								<div
-									className='flex-shrink-0 w-40 h-auto'
-									style={{ transform: "rotate(-9.36deg)" }}>
-									<Image
-										src='/assets/frames/wild-frame.png'
-										alt='WILD Frame'
-										width={178}
-										height={534}
-										className='object-contain'
-									/>
+							<div className='flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 md:gap-6 lg:gap-8 px-2 sm:px-3'>
+								<div className='flex-shrink-0 w-20 sm:w-24 md:w-28 lg:w-32 h-auto' style={{ transform: "rotate(-9.36deg)" }}>
+									<Image src='/assets/frames/wild-frame.png' alt='WILD Frame' width={178} height={534} className='object-contain w-full h-full' />
 								</div>
-
-								{/* Frame 2 - DISCO (rotate -5.58deg) */}
-								<div
-									className='flex-shrink-0 w-40 h-auto'
-									style={{ transform: "rotate(8.19deg)" }}>
-									<Image
-										src='/assets/frames/disco-frame.png'
-										alt='DISCO Frame'
-										width={178}
-										height={534}
-										className='object-contain'
-									/>
+								<div className='flex-shrink-0 w-20 sm:w-24 md:w-28 lg:w-32 h-auto' style={{ transform: "rotate(8.19deg)" }}>
+									<Image src='/assets/frames/disco-frame.png' alt='DISCO Frame' width={178} height={534} className='object-contain w-full h-full' />
 								</div>
-
-								{/* Frame 3 - WILD (rotate 4.61deg) */}
-								<div
-									className='flex-shrink-0 w-40 h-auto'
-									style={{ transform: "rotate(-5.58deg)" }}>
-									<Image
-										src='/assets/frames/disco-frame.png'
-										alt='WILD Frame'
-										width={178}
-										height={534}
-										className='object-contain'
-									/>
+								<div className='flex-shrink-0 w-20 sm:w-24 md:w-28 lg:w-32 h-auto hidden sm:block' style={{ transform: "rotate(-5.58deg)" }}>
+									<Image src='/assets/frames/disco-frame.png' alt='DISCO Frame' width={178} height={534} className='object-contain w-full h-full' />
 								</div>
-
-								{/* Frame 4 - WILD (rotate 8.19deg) */}
-								<div
-									className='flex-shrink-0 w-40 h-auto'
-									style={{ transform: "rotate(4.61deg)" }}>
-									<Image
-										src='/assets/frames/wild-frame.png'
-										alt='WILD Frame'
-										width={178}
-										height={534}
-										className='object-contain'
-									/>
+								<div className='flex-shrink-0 w-20 sm:w-24 md:w-28 lg:w-32 h-auto hidden lg:block' style={{ transform: "rotate(4.61deg)" }}>
+									<Image src='/assets/frames/wild-frame.png' alt='WILD Frame' width={178} height={534} className='object-contain w-full h-full' />
 								</div>
 							</div>
 						</div>
